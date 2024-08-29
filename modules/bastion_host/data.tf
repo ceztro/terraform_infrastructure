@@ -43,7 +43,7 @@ data "aws_iam_policy_document" "bastion_host_role_policy" {
     condition {
       test     = "StringEquals"
       variable = "aws:PrincipalArn"
-      values   = flatten([var.eks_admins])
+      values   = flatten([var.eks_admins_arns])
     }
   }
 }
@@ -84,8 +84,12 @@ data "aws_ami" "amazon_linux" {
 ## Auth ConfigMap file
 ##################
 
-data "local_file" "config_map_aws_auth" {
-  filename = "./modules/bastion_host/resources/eks_auth_configmap.yaml"
+resource "local_file" "aws_auth_configmap" {
+  content  = base64encode(templatefile("${path.module}/resources/aws_auth_configmap.tpl", {
+    account_id = data.aws_caller_identity.current.account_id,
+    usernames  = flatten(var.eks_admins_names),
+  }))
+  filename = "${path.module}/resources/aws_auth_configmap.yaml"
 }
 
 data "local_file" "read_only_role" {

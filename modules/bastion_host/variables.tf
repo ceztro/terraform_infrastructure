@@ -48,7 +48,7 @@ variable bastion_host {
   type        = string
 }
 
-variable eks_admins {
+variable eks_admins_arns {
   description = "The ARNs of the IAM users who are EKS admins"
   type        = list(string)
 }
@@ -56,4 +56,9 @@ variable eks_admins {
 variable eks_cluster_name {
   description = "The name of the EKS cluster"
   type        = string
+}
+
+variable eks_admins_names {
+  description = "The names of the IAM users who are EKS admins"
+  type        = list(string)
 }

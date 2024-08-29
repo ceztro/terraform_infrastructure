@@ -65,8 +65,9 @@ module "bastion_host" {
   ssh_pub_key_location   = var.ssh_pub_key_location
   cluster_name           = var.cluster_name
   bastion_host           = var.bastion_host
-  eks_admins             = [for user in module.iam.usernames : "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${user}"]
+  eks_admins_arns        = [for user in module.iam.usernames : "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${user}"]
   eks_cluster_name       = module.kubernetes.eks_cluster_name
+  eks_admins_names       = module.iam.usernames 
 
   #shared variables
   region           = var.region

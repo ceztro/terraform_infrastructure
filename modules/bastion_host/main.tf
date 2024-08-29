@@ -121,7 +121,7 @@ resource "aws_key_pair" "deployer" {
 }
 
 resource "aws_instance" "eks_admin_host" {
-  depends_on = [var.eks_cluster_name]
+  depends_on = [local_file.aws_auth_configmap, var.eks_cluster_name]   
 
   ami           = data.aws_ami.amazon_linux.id
   instance_type = "t2.micro"
@@ -152,7 +152,7 @@ resource "aws_instance" "eks_admin_host" {
 
       # Decode and save the Kubernetes YAML file
       echo '${data.local_file.read_only_role.content_base64}' | base64 --decode > /tmp/read_only_role.yaml
-      echo '${data.local_file.config_map_aws_auth.content_base64}' | base64 --decode > /tmp/configmap.yaml
+      echo '${local_file.aws_auth_configmap.content}' | base64 --decode > /tmp/configmap.yaml
 
       # Switch from root to ec2-user and fetching kubeconfig
       su - ec2-user -c "aws eks update-kubeconfig --region ${var.region} --name ${var.cluster_name}"
