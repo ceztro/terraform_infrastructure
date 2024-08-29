@@ -55,7 +55,8 @@ resource "random_id" "lc_id" {
 
 resource "aws_launch_configuration" "bastion_host" {
   depends_on = [
-    aws_instance.eks_admin_host
+    aws_instance.eks_admin_host,
+    var.eks_cluster_name
   ]
   name          = "${var.bastion_host}-config-${formatdate("YYYYMMDDHHmmss", timestamp())}-${random_id.lc_id.hex}"# Ensures uniqueness
   image_id      = data.aws_ami.amazon_linux.id  # Uses a data source to fetch the latest Amazon Linux AMI
@@ -78,8 +79,8 @@ resource "aws_launch_configuration" "bastion_host" {
     chmod +x ./kubectl
     mv ./kubectl /usr/local/bin/kubectl
 
-    # Configure kubectl to connect to the EKS cluster
-    aws eks update-kubeconfig --region ${var.region} --name ${var.cluster_name}
+    # Switch from root to ec2-user and fetching kubeconfig
+    su - ec2-user -c "aws eks update-kubeconfig --region ${var.region} --name ${var.cluster_name}"
 
   EOF
 
@@ -120,6 +121,8 @@ resource "aws_key_pair" "deployer" {
 }
 
 resource "aws_instance" "eks_admin_host" {
+  depends_on = [var.eks_cluster_name]
+
   ami           = data.aws_ami.amazon_linux.id
   instance_type = "t2.micro"
   subnet_id = var.public_subnet_id
@@ -147,16 +150,16 @@ resource "aws_instance" "eks_admin_host" {
       chmod +x ./kubectl
       mv ./kubectl /usr/local/bin/kubectl
 
-      # Configure kubectl to connect to the EKS cluster
-      aws eks update-kubeconfig --region ${var.region} --name ${var.cluster_name}
-
       # Decode and save the Kubernetes YAML file
       echo '${data.local_file.read_only_role.content_base64}' | base64 --decode > /tmp/read_only_role.yaml
       echo '${data.local_file.config_map_aws_auth.content_base64}' | base64 --decode > /tmp/configmap.yaml
 
+      # Switch from root to ec2-user and fetching kubeconfig
+      su - ec2-user -c "aws eks update-kubeconfig --region ${var.region} --name ${var.cluster_name}"
+
       # Apply the Kubernetes configuration
-      kubectl apply -f /tmp/read_only_role.yaml
-      kubectl apply -f /tmp/configmap.yaml
+      su - ec2-user -c "kubectl apply -f /tmp/read_only_role.yaml"
+      su - ec2-user -c "kubectl apply -f /tmp/configmap.yaml"
     EOF
 
   # Optional: Set a tag to easily identify the instance

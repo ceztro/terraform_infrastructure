@@ -52,3 +52,8 @@ variable eks_admins {
   description = "The ARNs of the IAM users who are EKS admins"
   type        = list(string)
 }
+
+variable eks_cluster_name {
+  description = "The name of the EKS cluster"
+  type        = string
+}
