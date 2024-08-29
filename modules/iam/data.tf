@@ -73,8 +73,38 @@ data "aws_iam_policy_document" "eks_admin_policy" {
       "elasticloadbalancing:*",
       "autoscaling:*",
       "ssm:GetParameter",
-      "ssm:GetParameters"
+      "ssm:GetParameters",
+      "ssm:DescribeInstanceInformation",
+      "ssm:SendCommand",
+      "ssm:ListCommands",
+      "ssm:GetCommandInvocation",
+      "ssm:StartSession",
+      "ssm:GetConnectionStatus",
+      "ssmmessages:CreateControlChannel",
+      "ssmmessages:CreateDataChannel",
+      "ssmmessages:OpenControlChannel",
+      "ssmmessages:OpenDataChannel",
+      "ec2messages:AcknowledgeMessage",
+      "ec2messages:DeleteMessage",
+      "ec2messages:FailMessage",
+      "ec2messages:GetEndpoint",
+      "ec2messages:GetMessages",
+      "ec2messages:SendReply"
     ]
     resources = ["*"]
+  }
+}
+
+data "aws_iam_policy_document" "eks_admin_trust_policy" {
+  statement {
+    effect = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "AWS"
+      identifiers = [
+        for user in aws_iam_user.eks_admins : "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${user.name}"
+      ]
+    }
   }
 }

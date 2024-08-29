@@ -79,9 +79,6 @@ resource "aws_launch_configuration" "bastion_host" {
     chmod +x ./kubectl
     mv ./kubectl /usr/local/bin/kubectl
 
-    # Switch from root to ec2-user and fetching kubeconfig
-    su - ec2-user -c "aws eks update-kubeconfig --region ${var.region} --name ${var.cluster_name}"
-
   EOF
 
   lifecycle {
