@@ -17,13 +17,18 @@ variable "eks_cluster_subnet_ids" {
 variable "endpoint_private_access" {
   description = "Indicates whether or not the Amazon EKS private API server endpoint is enabled"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "endpoint_public_access" {
   description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled"
   type        = bool
-  default     = true
+  default     = false
+}
+
+variable bastion_host_security_group_id {
+  description = "The ID of the security group for the Bastion host"
+  type        = string
 }
 
 # Project variables

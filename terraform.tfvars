@@ -24,3 +24,8 @@ pvt_min_size  = 1
 pblc_desired_size = 2 
 pblc_max_size = 2
 pblc_min_size = 1
+
+# bastion host variables
+my_ip = "95.49.128.96/32"
+ssh_pub_key_location = "~/.ssh/id_rsa_study.pub"
+bastion_host = "bastion-host"

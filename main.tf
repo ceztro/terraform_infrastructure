@@ -26,6 +26,7 @@ module "kubernetes" {
   eks_cluster_subnet_ids      = flatten([module.networking.public_subnets, module.networking.private_subnets])
   endpoint_private_access     = var.endpoint_private_access
   endpoint_public_access      = var.endpoint_public_access
+  bastion_host_security_group_id = module.bastion_host.bastion_host_security_group_id
 
   # Project variables
   env                         = var.env
@@ -54,4 +55,22 @@ module "iam" {
 
   cluster_name = var.cluster_name
   region       = var.region
+}
+
+module "bastion_host" {
+  source = "./modules/bastion_host/"
+
+  my_ip                  = var.my_ip
+  vpc_id                 = module.networking.vpc_id
+  ssh_pub_key_location   = var.ssh_pub_key_location
+  cluster_name           = var.cluster_name
+  bastion_host           = var.bastion_host
+  eks_admins             = [for user in module.iam.usernames : "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${user}"]
+
+  #shared variables
+  region           = var.region
+  env              = var.env
+  project_name     = var.project_name
+  project_tags     = var.project_tags
+  public_subnet_id = module.networking.public_subnets[0]
 }

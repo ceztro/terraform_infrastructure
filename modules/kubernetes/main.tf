@@ -80,6 +80,16 @@ resource "aws_security_group_rule" "cluster_inbound" {
   type                     = "ingress"
 }
 
+resource "aws_security_group_rule" "cluster_inbound_bastion_host" {
+  description              = "Allow bastion host to communicate with the cluster API Server"
+  from_port                = 443
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.eks_cluster.id
+  source_security_group_id = var.bastion_host_security_group_id
+  to_port                  = 443
+  type                     = "ingress"
+}
+
 resource "aws_security_group_rule" "cluster_outbound" {
   description              = "Allow cluster API Server to communicate with the worker nodes"
   from_port                = 1024
@@ -227,15 +237,17 @@ resource "aws_security_group_rule" "nodes_inbound" {
 ## EKS Cluster CloudWatch Logging
 ##################
 
-resource "aws_cloudwatch_log_group" "eks" {
-  # The log group name format is /aws/eks/<cluster-name>/cluster
-  # Reference: https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html
-  name              = "/aws/eks/${var.cluster_name}/cluster"
-  retention_in_days = 7
-  kms_key_id        = var.kms_key_arn
+# Cloudwatch group is not being deleted on destroy, hence I commented it out
 
-  tags = merge(
-    { "Env" = var.env, "Name" = "${var.project_name}-eks-cluster-sg" },
-    var.project_tags
-  )
-}
+# resource "aws_cloudwatch_log_group" "eks" {
+#   # The log group name format is /aws/eks/<cluster-name>/cluster
+#   # Reference: https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html
+#   name              = "/aws/eks/${var.cluster_name}/cluster"
+#   retention_in_days = 7
+#   kms_key_id        = var.kms_key_arn
+
+#   tags = merge(
+#     { "Env" = var.env, "Name" = "${var.project_name}-eks-cluster-sg" },
+#     var.project_tags
+#   )
+# }

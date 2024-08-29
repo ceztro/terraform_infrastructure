@@ -27,3 +27,8 @@ variable pvt_min_size {}
 variable pblc_desired_size {}
 variable pblc_max_size {}
 variable pblc_min_size {}
+
+# bastion host variables
+variable my_ip {}
+variable ssh_pub_key_location {}
+variable bastion_host {}

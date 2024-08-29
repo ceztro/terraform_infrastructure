@@ -1,0 +1,31 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: read-only
+rules:
+- apiGroups: [""]
+  #
+  # To specify resources in core API group
+  #
+  resources: ["pods", "services", "endpoints", "nodes", "configmaps", "secrets", "namespaces"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps", "batch"]
+  #
+  # To specify resources in non-core API groups
+  #
+  resources: ["deployments", "daemonsets", "replicasets", "statefulsets", "cronjobs", "jobs"]
+  verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: read-only-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: read-only
+subjects:
+- kind: User
+  name: admin  # This should match the username in your aws-auth ConfigMap
+  apiGroup: rbac.authorization.k8s.io
