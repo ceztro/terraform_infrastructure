@@ -95,16 +95,16 @@ data "aws_iam_policy_document" "eks_admin_policy" {
   }
 }
 
-data "aws_iam_policy_document" "eks_admin_trust_policy" {
-  statement {
-    effect = "Allow"
-    actions = ["sts:AssumeRole"]
+# data "aws_iam_policy_document" "eks_admin_trust_policy" {
+#   statement {
+#     effect = "Allow"
+#     actions = ["sts:AssumeRole"]
 
-    principals {
-      type        = "AWS"
-      identifiers = [
-        for user in aws_iam_user.eks_admins : "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${user.name}"
-      ]
-    }
-  }
-}
+#     principals {
+#       type        = "AWS"
+#       identifiers = [
+#         for user in aws_iam_user.eks_admins : "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${user.name}"
+#       ]
+#     }
+#   }
+# }

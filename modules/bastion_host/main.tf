@@ -79,6 +79,14 @@ resource "aws_launch_configuration" "bastion_host" {
     chmod +x ./kubectl
     mv ./kubectl /usr/local/bin/kubectl
 
+    echo 'export PATH=$PATH:/usr/local/bin' >> ~/.bashrc
+
+    curl -L https://github.com/99designs/aws-vault/releases/latest/download/aws-vault-linux-amd64 -o aws-vault
+    chmod +x aws-vault
+    mv aws-vault /usr/local/bin/
+    echo 'export AWS_VAULT_BACKEND=file' >> ~/.bashrc
+    echo 'export AWS_REGION=us-east-1' >> ~/.bashrc
+
   EOF
 
   lifecycle {
