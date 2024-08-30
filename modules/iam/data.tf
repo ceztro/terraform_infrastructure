@@ -108,3 +108,53 @@ data "aws_iam_policy_document" "eks_admin_policy" {
 #     }
 #   }
 # }
+
+##################
+## OIDC     ##
+##################
+
+# data "aws_iam_policy_document" "oidc_trust_policy" {
+#   statement {
+#     actions = ["sts:AssumeRoleWithWebIdentity"]
+
+#     principals {
+#       type        = "Federated"
+#       identifiers = [aws_iam_openid_connect_provider.this.arn]
+#     }
+
+#     condition {
+#       test     = "StringEquals"
+#       values   = ["sts.amazonaws.com"]
+#       variable = "token.actions.githubusercontent.com:aud"
+#     }
+
+#     condition {
+#       test     = "StringLike"
+#       values   = ["repo:ceztro/terraform_infrastructure"]
+#       variable = "token.actions.githubusercontent.com:sub"
+#     }
+#   }
+# }
+
+##################
+## Github Actions 
+##################
+
+# 
+
+data "aws_iam_policy_document" "github_actions_user_policy" {
+  statement {
+    effect  = "Allow"
+    actions = [
+      "ec2:StartInstances",
+      "ec2:StopInstances",
+      "ec2:RebootInstances",
+      "ec2:DescribeInstances",
+      "ec2:DescribeInstanceStatus",
+      "ec2:DescribeInstanceAttribute",
+      "ec2:TerminateInstances",
+      "ec2:ModifyInstanceAttribute"
+    ]
+    resources = ["arn:aws:ec2:${var.region}:${data.aws_caller_identity.current.account_id}:instance/${var.github_runner_ec2}"]
+  }
+}

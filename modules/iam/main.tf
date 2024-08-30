@@ -50,3 +50,57 @@ resource "aws_iam_user_policy" "eks_admins_user_policy" {
 #   role       = aws_iam_role.eks_admin_role.name
 #   policy_arn = aws_iam_policy.eks_admin_policy.arn
 # }
+
+
+# ##################
+# ## OIDC     ##
+# ##################
+
+# resource "aws_iam_openid_connect_provider" "this" {
+#   url = "https://token.actions.githubusercontent.com"
+
+#   client_id_list = [
+#     "sts.amazonaws.com",
+#   ]
+
+#   thumbprint_list = ["ffffffffffffffffffffffffffffffffffffffff"]
+# }
+
+# resource "aws_iam_role" "oidc" {
+#   name               = "github_oidc_role"
+#   assume_role_policy = data.aws_iam_policy_document.oidc_trust_policy.json
+# }
+
+# resource "aws_iam_policy" "oidc_role_policy" {
+#   name        = "ci-deploy-policy"
+#   description = "Policy used for deployments on CI"
+#   policy      = data.aws_iam_policy_document.oidc_deploy_policy.json
+# }
+
+# resource "aws_iam_role_policy_attachment" "oidc_policy_attachment" {
+#   role       = aws_iam_role.oidc.name
+#   policy_arn = aws_iam_policy.oidc_role_policy.arn
+# }
+
+
+##################
+## Github Actions IAM User
+##################
+
+resource "aws_iam_user" "github_actions_user" {
+  name = "github-actions-user"
+
+  tags = {
+    Role = "Github Actions"
+  }
+}
+
+resource "aws_iam_user_policy" "github_actions_user_policy" {
+  name   = "GithubActionsUserPolicy"
+  user   = aws_iam_user.github_actions_user.name
+  policy = data.aws_iam_policy_document.github_actions_user_policy.json
+}
+
+resource "aws_iam_access_key" "github_actions" {
+  user    = aws_iam_user.github_actions_user.name
+}

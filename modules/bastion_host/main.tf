@@ -8,6 +8,10 @@ locals {
   )
 }
 
+##################
+## Bastion Host for Admins
+##################
+
 resource "aws_iam_role" "bastion_host" {
   name = "${var.bastion_host}-role"
 
@@ -79,13 +83,13 @@ resource "aws_launch_configuration" "bastion_host" {
     chmod +x ./kubectl
     mv ./kubectl /usr/local/bin/kubectl
 
-    echo 'export PATH=$PATH:/usr/local/bin' >> ~/.bashrc
+    echo 'export PATH=$PATH:/usr/local/bin' >> /home/ec2-user/.bashrc
 
     curl -L https://github.com/99designs/aws-vault/releases/latest/download/aws-vault-linux-amd64 -o aws-vault
     chmod +x aws-vault
     mv aws-vault /usr/local/bin/
-    echo 'export AWS_VAULT_BACKEND=file' >> ~/.bashrc
-    echo 'export AWS_REGION=us-east-1' >> ~/.bashrc
+    echo 'export AWS_VAULT_BACKEND=file' >> /home/ec2-user/.bashrc
+    echo 'export AWS_REGION=us-east-1' >> /home/ec2-user/.bashrc
 
   EOF
 
@@ -93,8 +97,6 @@ resource "aws_launch_configuration" "bastion_host" {
     create_before_destroy = true
   }
 }
-
-
 
 resource "aws_autoscaling_group" "bastion_host" {
   launch_configuration = aws_launch_configuration.bastion_host.id
@@ -124,6 +126,10 @@ resource "aws_key_pair" "deployer" {
   key_name   = "deployer-key"
   public_key = file(var.ssh_pub_key_location)  # Adjust the path to your public key file
 }
+
+##################
+## Admin Host
+##################
 
 resource "aws_instance" "eks_admin_host" {
   depends_on = [local_file.aws_auth_configmap, var.eks_cluster_name]   
@@ -157,6 +163,7 @@ resource "aws_instance" "eks_admin_host" {
 
       # Decode and save the Kubernetes YAML file
       echo '${data.local_file.read_only_role.content_base64}' | base64 --decode > /tmp/read_only_role.yaml
+      echo '${data.local_file.github_runner_role.content_base64}' | base64 --decode > /tmp/github_runner_role.yaml
       echo '${local_file.aws_auth_configmap.content}' | base64 --decode > /tmp/configmap.yaml
 
       # Switch from root to ec2-user and fetching kubeconfig
@@ -164,6 +171,7 @@ resource "aws_instance" "eks_admin_host" {
 
       # Apply the Kubernetes configuration
       su - ec2-user -c "kubectl apply -f /tmp/read_only_role.yaml"
+      su - ec2-user -c "kubectl apply -f /tmp/github_runner_role.yaml"
       su - ec2-user -c "kubectl apply -f /tmp/configmap.yaml"
     EOF
 
@@ -178,5 +186,67 @@ resource "aws_iam_instance_profile" "ec2_admin_instance_profile" {
   role = "terraform-role"
 }
 
+##################
+## Github Actions Runner
+##################
 
+resource "aws_instance" "github_actions_runner" {
+  depends_on = [local_file.aws_auth_configmap, var.eks_cluster_name]   
 
+  ami           = data.aws_ami.amazon_linux.id
+  instance_type = "t2.micro"
+  subnet_id = var.public_subnet_id
+
+  # You can use an existing key pair, or create a new one
+  key_name = aws_key_pair.deployer.key_name
+
+  iam_instance_profile = aws_iam_instance_profile.github_actions_runner_instance_profile.name
+
+  # Replace with your security group ID
+  vpc_security_group_ids = [aws_security_group.bastion_host.id]
+
+  # User data to run commands on instance start
+  user_data = <<-EOF
+      #!/bin/bash
+      # Update and install necessary tools
+      yum update
+      yum install -y git docker jq
+      
+      # Add the default user to the Docker group
+      usermod -aG docker ec2-user
+
+      # Install kubectl to interact with Kubernetes
+      curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.18.9/2020-11-02/bin/linux/amd64/kubectl
+      chmod +x ./kubectl
+      mv ./kubectl /usr/local/bin/kubectl
+
+      # Switch from root to ec2-user and fetching kubeconfig
+      su - ec2-user -c "aws eks update-kubeconfig --region ${var.region} --name ${var.cluster_name}"
+
+      echo 'export PATH=$PATH:/usr/local/bin' >> /home/ec2-user/.bashrc
+      
+    EOF
+
+  # Optional: Set a tag to easily identify the instance
+  tags = {
+    Name = "GithubActionsRunnerInstance"
+  }
+}
+
+resource "aws_iam_instance_profile" "github_actions_runner_instance_profile" {
+  name = "github_actions_runner_instance_profile"
+  role =  aws_iam_role.github_actions_runner_role.name
+}
+
+resource "aws_iam_role" "github_actions_runner_role" {
+  name = "github_actions_runner_role"
+
+  assume_role_policy = data.aws_iam_policy_document.bastion_host_trust_relationship_policy.json
+}
+
+resource "aws_iam_role_policy" "github_actions_runner_policy" {
+  name = "github_actions_runner_policy"
+  role = aws_iam_role.github_actions_runner_role.id
+
+  policy = data.aws_iam_policy_document.bastion_host_role_policy.json
+}

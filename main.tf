@@ -53,8 +53,9 @@ module "kubernetes" {
 module "iam" {
   source = "./modules/iam/"
 
-  cluster_name = var.cluster_name
-  region       = var.region
+  cluster_name      = var.cluster_name
+  region            = var.region
+  github_runner_ec2 = module.bastion_host.github_runner_ec2_id
 }
 
 module "bastion_host" {

@@ -95,3 +95,7 @@ resource "local_file" "aws_auth_configmap" {
 data "local_file" "read_only_role" {
   filename = "./modules/bastion_host/resources/read_only_role.yaml"
 }
+
+data "local_file" "github_runner_role" {
+  filename = "./modules/bastion_host/resources/github_runner_role.yaml"
+}
