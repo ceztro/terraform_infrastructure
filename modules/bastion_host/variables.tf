@@ -62,3 +62,13 @@ variable eks_admins_names {
   description = "The names of the IAM users who are EKS admins"
   type        = list(string)
 }
+
+variable github_account_org {
+  description = "The name of the Github account or organization"
+  type        = string
+}
+
+variable github_account_repo {
+  description = "The name of the Github repository"
+  type        = string
+}

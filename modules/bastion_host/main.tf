@@ -165,14 +165,21 @@ resource "aws_instance" "eks_admin_host" {
       echo '${data.local_file.read_only_role.content_base64}' | base64 --decode > /tmp/read_only_role.yaml
       echo '${data.local_file.github_runner_role.content_base64}' | base64 --decode > /tmp/github_runner_role.yaml
       echo '${local_file.aws_auth_configmap.content}' | base64 --decode > /tmp/configmap.yaml
+      echo '${data.local_file.deployment.content_base64}' | base64 --decode > /tmp/deployment.yaml
 
       # Switch from root to ec2-user and fetching kubeconfig
       su - ec2-user -c "aws eks update-kubeconfig --region ${var.region} --name ${var.cluster_name}"
+
+      # Install Helm
+      curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+      chmod 700 get_helm.sh
+      ./get_helm.sh
 
       # Apply the Kubernetes configuration
       su - ec2-user -c "kubectl apply -f /tmp/read_only_role.yaml"
       su - ec2-user -c "kubectl apply -f /tmp/github_runner_role.yaml"
       su - ec2-user -c "kubectl apply -f /tmp/configmap.yaml"
+      su - ec2-user -c "kubectl apply -f /tmp/deployment.yaml"
     EOF
 
   # Optional: Set a tag to easily identify the instance
@@ -193,7 +200,7 @@ resource "aws_iam_instance_profile" "ec2_admin_instance_profile" {
 resource "aws_instance" "github_actions_runner" {
   depends_on = [local_file.aws_auth_configmap, var.eks_cluster_name]   
 
-  ami           = data.aws_ami.amazon_linux.id
+  ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
   subnet_id = var.public_subnet_id
 
@@ -207,25 +214,56 @@ resource "aws_instance" "github_actions_runner" {
 
   # User data to run commands on instance start
   user_data = <<-EOF
-      #!/bin/bash
-      # Update and install necessary tools
-      yum update
-      yum install -y git docker jq
-      
-      # Add the default user to the Docker group
-      usermod -aG docker ec2-user
+        #!/bin/bash
+        # Update and install necessary tools
+        apt-get update -y
+        apt-get upgrade -y
+        apt-get install -y git docker.io jq
+        apt-get install -y unzip
 
-      # Install kubectl to interact with Kubernetes
-      curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.18.9/2020-11-02/bin/linux/amd64/kubectl
-      chmod +x ./kubectl
-      mv ./kubectl /usr/local/bin/kubectl
+        # Install dev tools
+        apt-get install -y build-essential libssl-dev python3 python3-pip
+        curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+        apt-get install -y nodejs
+        
+        # Add the default user to the Docker group
+        usermod -aG docker ubuntu
+        systemctl enable docker
+        systemctl start docker
 
-      # Switch from root to ec2-user and fetching kubeconfig
-      su - ec2-user -c "aws eks update-kubeconfig --region ${var.region} --name ${var.cluster_name}"
+        # Install kubectl to interact with Kubernetes
+        curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.18.9/2020-11-02/bin/linux/amd64/kubectl
+        chmod +x ./kubectl
+        mv ./kubectl /usr/local/bin/kubectl
 
-      echo 'export PATH=$PATH:/usr/local/bin' >> /home/ec2-user/.bashrc
-      
-    EOF
+        # Install AWS CLI
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install
+
+        # Retrieve the GITHUB_TOKEN from AWS Secrets Manager
+        GITHUB_TOKEN=$(aws secretsmanager get-secret-value --secret-id github_token_for_actions_runner --query SecretString --output text | jq -r '.github_token_for_actions_runner')
+
+        RUNNER_TOKEN=$(curl -sX POST -H "Authorization: token $GITHUB_TOKEN" \
+        https://api.github.com/repos/${var.github_account_org}/${var.github_account_repo}/actions/runners/registration-token | jq -r .token)
+
+        # Run the GitHub Actions runner setup as the ubuntu user
+        su - ubuntu -c "
+          mkdir -p /home/ubuntu/actions-runner
+          cd /home/ubuntu/actions-runner
+          curl -o actions-runner-linux-x64-2.319.1.tar.gz -L https://github.com/actions/runner/releases/download/v2.319.1/actions-runner-linux-x64-2.319.1.tar.gz
+          tar xzf ./actions-runner-linux-x64-2.319.1.tar.gz
+          ./config.sh --url https://github.com/${var.github_account_org}/${var.github_account_repo} --token $RUNNER_TOKEN --unattended --name $(hostname) --labels self-hosted,ubuntu --work _work
+          sudo ./svc.sh install
+          sudo ./svc.sh start
+        "
+
+        # Switch from root to ubuntu user and fetching kubeconfig
+        su - ubuntu -c "aws eks update-kubeconfig --region ${var.region} --name ${var.cluster_name}"
+
+        echo 'export PATH=$PATH:/usr/local/bin' >> /home/ubuntu/.bashrc
+        
+      EOF
 
   # Optional: Set a tag to easily identify the instance
   tags = {
@@ -248,5 +286,5 @@ resource "aws_iam_role_policy" "github_actions_runner_policy" {
   name = "github_actions_runner_policy"
   role = aws_iam_role.github_actions_runner_role.id
 
-  policy = data.aws_iam_policy_document.bastion_host_role_policy.json
+  policy = data.aws_iam_policy_document.github_runner_role_policy.json
 }

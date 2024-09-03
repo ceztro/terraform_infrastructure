@@ -87,20 +87,20 @@ resource "aws_iam_user_policy" "eks_admins_user_policy" {
 ## Github Actions IAM User
 ##################
 
-resource "aws_iam_user" "github_actions_user" {
-  name = "github-actions-user"
+# resource "aws_iam_user" "github_actions_user" {
+#   name = "github-actions-user"
 
-  tags = {
-    Role = "Github Actions"
-  }
-}
+#   tags = {
+#     Role = "Github Actions"
+#   }
+# }
 
-resource "aws_iam_user_policy" "github_actions_user_policy" {
-  name   = "GithubActionsUserPolicy"
-  user   = aws_iam_user.github_actions_user.name
-  policy = data.aws_iam_policy_document.github_actions_user_policy.json
-}
+# resource "aws_iam_user_policy" "github_actions_user_policy" {
+#   name   = "GithubActionsUserPolicy"
+#   user   = aws_iam_user.github_actions_user.name
+#   policy = data.aws_iam_policy_document.github_actions_user_policy.json
+# }
 
-resource "aws_iam_access_key" "github_actions" {
-  user    = aws_iam_user.github_actions_user.name
-}
+# resource "aws_iam_access_key" "github_actions" {
+#   user    = aws_iam_user.github_actions_user.name
+# }

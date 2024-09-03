@@ -171,7 +171,7 @@ resource "aws_eks_node_group" "public" {
 ##################
 
 resource "aws_iam_role" "eks_nodes" {
-  name                 = "${var.cluster_name}-worker"
+  name                 = "${var.cluster_name}-worker-role"
 
   assume_role_policy = data.aws_iam_policy_document.eks_node_trust_relationship_policy.json
 }

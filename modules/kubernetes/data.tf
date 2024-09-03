@@ -26,6 +26,17 @@ data "aws_iam_policy_document" "eks_cluster_role_policy" {
       "ec2:DescribeVpcs",
       "ec2:DescribeDhcpOptions",
       "ec2:DescribeAvailabilityZones",
+      "ec2:DescribeSubnets",
+      "elasticloadbalancing:*",
+      "ec2:AuthorizeSecurityGroupIngress",
+      "ec2:RevokeSecurityGroupIngress",
+      "ec2:CreateSecurityGroup",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DeleteSecurityGroup",
+      "ec2:DescribeRouteTables",
+      "ec2:CreateTags",
+      "ec2:DescribeAccountAttributes",
+      "iam:CreateServiceLinkedRole",
       "kms:DescribeKey"
     ]
     resources = ["*"]

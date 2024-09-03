@@ -27,7 +27,8 @@ data "aws_iam_policy_document" "bastion_host_role_policy" {
       "ec2messages:FailMessage",
       "ec2messages:GetEndpoint",
       "ec2messages:GetMessages",
-      "ec2messages:SendReply"
+      "ec2messages:SendReply",
+      "ecr:*"
     ]
     effect = "Allow"
     resources = ["*"]
@@ -80,6 +81,88 @@ data "aws_ami" "amazon_linux" {
   owners = ["137112412989"]  # This is the AWS account ID for Amazon Linux AMIs
 }
 
+data "aws_ami" "ubuntu" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["099720109477"]  # Canonical's AWS account ID for official Ubuntu images
+}
+
+##################
+## Github Runner IAM Policies
+##################
+
+data "aws_iam_policy_document" "github_runner_role_policy" {
+  statement {
+    actions = [
+      "ec2:Describe*",
+      "eks:Describe*",
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "ssm:DescribeInstanceInformation",
+      "ssm:SendCommand",
+      "ssm:CreateDocument",
+      "ssm:UpdateInstanceInformation",
+      "ssm:ListCommands",
+      "ssm:GetCommandInvocation",
+      "ssmmessages:CreateControlChannel",
+      "ssmmessages:CreateDataChannel",
+      "ssmmessages:OpenControlChannel",
+      "ssmmessages:OpenDataChannel",
+      "ec2messages:AcknowledgeMessage",
+      "ec2messages:DeleteMessage",
+      "ec2messages:FailMessage",
+      "ec2messages:GetEndpoint",
+      "ec2messages:GetMessages",
+      "ec2messages:SendReply",
+      "ecr:*"
+    ]
+    effect = "Allow"
+    resources = ["*"]
+  }
+
+  # Restrict SSM StartSession to specific users
+  statement {
+    actions = [
+      "ssm:StartSession"
+    ]
+    effect = "Allow"
+    resources = ["*"]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:PrincipalArn"
+      values   = flatten([var.eks_admins_arns])
+    }
+  }
+
+  # Add access to the specific Secrets Manager secret
+  statement {
+    actions = [
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:DescribeSecret"
+    ]
+    effect   = "Allow"
+    resources = [
+      "arn:aws:secretsmanager:us-east-1:871548798187:secret:github_token_for_actions_runner-2KGVpw"
+    ]
+  }
+}
+
 ##################
 ## Auth ConfigMap file
 ##################
@@ -98,4 +181,8 @@ data "local_file" "read_only_role" {
 
 data "local_file" "github_runner_role" {
   filename = "./modules/bastion_host/resources/github_runner_role.yaml"
+}
+
+data "local_file" "deployment" {
+  filename = "./modules/bastion_host/resources/deployment.yaml"
 }

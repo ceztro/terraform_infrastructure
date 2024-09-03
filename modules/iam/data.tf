@@ -140,21 +140,21 @@ data "aws_iam_policy_document" "eks_admin_policy" {
 ## Github Actions 
 ##################
 
-# 
+# # 
 
-data "aws_iam_policy_document" "github_actions_user_policy" {
-  statement {
-    effect  = "Allow"
-    actions = [
-      "ec2:StartInstances",
-      "ec2:StopInstances",
-      "ec2:RebootInstances",
-      "ec2:DescribeInstances",
-      "ec2:DescribeInstanceStatus",
-      "ec2:DescribeInstanceAttribute",
-      "ec2:TerminateInstances",
-      "ec2:ModifyInstanceAttribute"
-    ]
-    resources = ["arn:aws:ec2:${var.region}:${data.aws_caller_identity.current.account_id}:instance/${var.github_runner_ec2}"]
-  }
-}
+# data "aws_iam_policy_document" "github_actions_user_policy" {
+#   statement {
+#     effect  = "Allow"
+#     actions = [
+#       "ec2:StartInstances",
+#       "ec2:StopInstances",
+#       "ec2:RebootInstances",
+#       "ec2:DescribeInstances",
+#       "ec2:DescribeInstanceStatus",
+#       "ec2:DescribeInstanceAttribute",
+#       "ec2:TerminateInstances",
+#       "ec2:ModifyInstanceAttribute"
+#     ]
+#     resources = ["arn:aws:ec2:${var.region}:${data.aws_caller_identity.current.account_id}:instance/${var.github_runner_ec2}"]
+#   }
+# }

@@ -10,12 +10,12 @@ output "usernames" {
 ## Github Actions IAM User Access Keys
 ##################
 
-output "github_actions_access_key_id" {
-  value = aws_iam_access_key.github_actions.id
-}
+# output "github_actions_access_key_id" {
+#   value = aws_iam_access_key.github_actions.id
+# }
 
-output "github_actions_secret_access_key" {
-  value       = aws_iam_access_key.github_actions.secret
-  description = "This is the secret access key for the GitHub Actions IAM user"
-  sensitive   = true
-}
+# output "github_actions_secret_access_key" {
+#   value       = aws_iam_access_key.github_actions.secret
+#   description = "This is the secret access key for the GitHub Actions IAM user"
+#   sensitive   = true
+# }

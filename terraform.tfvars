@@ -29,3 +29,5 @@ pblc_min_size = 1
 my_ip = "95.49.128.96/32"
 ssh_pub_key_location = "~/.ssh/id_rsa_study.pub"
 bastion_host = "bastion-host"
+github_account_repo = "travel_guide"
+github_account_org = "ceztro"

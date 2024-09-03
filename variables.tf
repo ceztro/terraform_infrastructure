@@ -32,3 +32,5 @@ variable pblc_min_size {}
 variable my_ip {}
 variable ssh_pub_key_location {}
 variable bastion_host {}
+variable github_account_repo {}
+variable github_account_org {}
