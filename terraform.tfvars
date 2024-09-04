@@ -3,6 +3,7 @@ region           = "us-east-1"
 env              = "dev"
 project_name     = "travel-guide"
 project_tags     = { "Project Name" = "travel guide", "Project Owner" = "Cezary Trojanowski", "Deployment Type" = "terraform"}
+aws_iam_role     = "arn:aws:iam::871548798187:role/terraform-role"
 
 #networking variables
 cidr_block       = "10.0.0.0/16"

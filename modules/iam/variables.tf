@@ -12,3 +12,8 @@ variable github_runner_ec2 {
   description = "The name of the EC2 instance that will be used as a GitHub Actions runner"
   type        = string
 }
+
+variable aws_iam_role {
+  description = "The IAM role for the EKS cluster"
+  type        = string
+}

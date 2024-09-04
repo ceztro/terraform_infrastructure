@@ -17,7 +17,7 @@ data "aws_iam_policy_document" "kms_policy" {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/adminuser"]  # Replace with actual EKS administrator ARN
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/adminuser"] 
     }
     actions = [
       "kms:ReplicateKey",
@@ -43,6 +43,40 @@ data "aws_iam_policy_document" "kms_policy" {
     principals {
       type        = "Service"
       identifiers = ["logs.${var.region}.amazonaws.com"]
+    }
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "Allow EKS to use the key"
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["eks.${var.region}.amazonaws.com"]
+    }
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "Allow RDS to use the key"
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["rds.${var.region}.amazonaws.com"]
     }
     actions = [
       "kms:Encrypt",

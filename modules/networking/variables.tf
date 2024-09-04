@@ -22,6 +22,11 @@ variable "region" {
   default     = "us-west-1"
 }
 
+variable "aws_iam_role" {
+  description = "The IAM role for the resources in the project"
+  type        = string
+}
+
 # Networking variables
 variable "cidr_block" {
   description = "The CIDR block for the VPC"

@@ -55,6 +55,11 @@ variable "project_tags" {
   default     = {}
 }
 
+variable "aws_iam_role" {
+  description = "The IAM role for the EKS cluster"
+  type        = string
+}
+
 # Node group variables
 variable "ami_type" {
   description = "The AMI type for the node group (e.g., AL2_x86_64, AL2_x86_64_GPU)"

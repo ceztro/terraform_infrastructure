@@ -16,6 +16,11 @@ variable region {
     type = string
 } 
 
+variable aws_iam_role {
+    description = "The IAM role for the resources in the project"
+    type = string
+}
+
 # networking variables
 variable cidr_block {
     description = "The CIDR block for the VPC"
@@ -76,6 +81,16 @@ variable pblc_max_size {
 variable pblc_min_size {
     description = "The minimum size of the public node group"
     type = number
+}
+
+# rds variables
+variable rds_username {
+    description = "The username for the RDS instance"
+    type = string
+}
+variable rds_password {
+    description = "The password for the RDS instance"
+    type = string
 }
 
 # bastion host variables

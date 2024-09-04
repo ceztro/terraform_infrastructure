@@ -21,6 +21,11 @@ variable project_tags {
     type = map(string)
 }
 
+variable aws_iam_role {
+    description = "The IAM role for the RDS instance"
+    type = string
+}
+
 ##################
 ## Module variables
 ##################
@@ -59,5 +64,10 @@ variable vpc_cidr {
 
 variable vpc_id {
     description = "The ID of the VPC"
+    type = string
+}
+
+variable kms_key_arn {
+    description = "The ARN of the KMS key"
     type = string
 }

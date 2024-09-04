@@ -1,8 +1,7 @@
-provider "aws" {
-}
-
 module "networking" {
   source = "./modules/networking/"
+  aws_iam_role    = var.aws_iam_role
+
 
   #shared variables
   region           = var.region
@@ -19,6 +18,7 @@ module "networking" {
 
 module "kubernetes" {
   source = "./modules/kubernetes/"
+  aws_iam_role    = var.aws_iam_role
 
   # EKS Cluster Variables
   cluster_name                = var.cluster_name
@@ -49,8 +49,28 @@ module "kubernetes" {
   vpc_id                      = module.networking.vpc_id
 }
 
+module "rds" {
+  source = "./modules/rds/"
+  aws_iam_role    = var.aws_iam_role
+
+  #shared variables
+  region           = var.region
+  env              = var.env
+  project_name     = var.project_name
+  project_tags     = var.project_tags
+
+  # RDS variables
+  vpc_id            = module.networking.vpc_id
+  vpc_cidr          = module.networking.vpc_cidr
+  private_subnet_id = module.networking.private_subnets[0]
+  rds_username      = var.rds_username
+  rds_password      = var.rds_password
+  kms_key_arn       = module.iam.kms_eks_key_arn
+}
+
 module "iam" {
   source = "./modules/iam/"
+  aws_iam_role    = var.aws_iam_role
 
   cluster_name      = var.cluster_name
   region            = var.region
@@ -59,6 +79,7 @@ module "iam" {
 
 module "bastion_host" {
   source = "./modules/bastion_host/"
+  aws_iam_role    = var.aws_iam_role
 
   my_ip                  = var.my_ip
   vpc_id                 = module.networking.vpc_id

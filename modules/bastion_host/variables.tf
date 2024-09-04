@@ -72,3 +72,8 @@ variable github_account_repo {
   description = "The name of the Github repository"
   type        = string
 }
+
+variable aws_iam_role {
+  description = "The IAM role for the bastion host"
+  type        = string
+}
