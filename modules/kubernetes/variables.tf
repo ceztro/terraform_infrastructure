@@ -56,11 +56,6 @@ variable "project_tags" {
 }
 
 # Node group variables
-variable "node_group_name" {
-  description = "The name of the node group"
-  type        = string
-}
-
 variable "ami_type" {
   description = "The AMI type for the node group (e.g., AL2_x86_64, AL2_x86_64_GPU)"
   type        = string

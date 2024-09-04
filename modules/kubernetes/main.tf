@@ -107,7 +107,7 @@ resource "aws_security_group_rule" "cluster_outbound" {
 # Nodes in private subnets
 resource "aws_eks_node_group" "main" {
   cluster_name    = aws_eks_cluster.this.name
-  node_group_name = var.node_group_name
+  node_group_name = "${var.project_name}-eks-node-group"
   node_role_arn   = aws_iam_role.eks_nodes.arn
   subnet_ids      = var.private_subnets
 
@@ -138,7 +138,7 @@ resource "aws_eks_node_group" "main" {
 # Nodes in public subnet
 resource "aws_eks_node_group" "public" {
   cluster_name    = aws_eks_cluster.this.name
-  node_group_name = "${var.node_group_name}-public"
+  node_group_name = "${var.project_name}-eks-node-group-public"
   node_role_arn   = aws_iam_role.eks_nodes.arn
   subnet_ids      = var.public_subnets
 
@@ -196,7 +196,7 @@ resource "aws_iam_role_policy_attachment" "ec2_read_only" {
 ##################
 
 resource "aws_security_group" "eks_nodes" {
-  name        = "${var.node_group_name}-eks-nodes-sg"
+  name        = "${var.project_name}-eks-nodes-sg"
   description = "Security group for all nodes in the cluster"
   vpc_id      = var.vpc_id
 

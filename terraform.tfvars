@@ -16,7 +16,6 @@ endpoint_private_access = true
 endpoint_public_access  = false  # < must be set to true in order to deploy CI/CD that will deploy to the cluster
 
 # node group variables
-node_group_name = "travel-guide-node-group"
 instance_types = ["t3.medium"]
 pvt_desired_size = 2
 pvt_max_size  = 2
@@ -26,8 +25,6 @@ pblc_max_size = 2
 pblc_min_size = 1
 
 # bastion host variables
-my_ip = "95.49.128.96/32"
-ssh_pub_key_location = "~/.ssh/id_rsa_study.pub"
 bastion_host = "bastion-host"
 github_account_repo = "travel_guide"
 github_account_org = "ceztro"

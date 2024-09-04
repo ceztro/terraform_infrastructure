@@ -35,7 +35,6 @@ module "kubernetes" {
   project_tags                = var.project_tags
 
   # Node group variables
-  node_group_name             = var.node_group_name
   instance_types              = var.instance_types
   pvt_desired_size            = var.pvt_desired_size
   pvt_max_size                = var.pvt_max_size
@@ -63,7 +62,7 @@ module "bastion_host" {
 
   my_ip                  = var.my_ip
   vpc_id                 = module.networking.vpc_id
-  ssh_pub_key_location   = var.ssh_pub_key_location
+  public_key             = var.public_key
   cluster_name           = var.cluster_name
   bastion_host           = var.bastion_host
   eks_admins_arns        = [for user in module.iam.usernames : "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${user}"]

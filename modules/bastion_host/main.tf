@@ -124,7 +124,7 @@ resource "aws_autoscaling_group" "bastion_host" {
 
 resource "aws_key_pair" "deployer" {
   key_name   = "deployer-key"
-  public_key = file(var.ssh_pub_key_location)  # Adjust the path to your public key file
+  public_key = var.public_key  # Adjust the path to your public key file
 }
 
 ##################

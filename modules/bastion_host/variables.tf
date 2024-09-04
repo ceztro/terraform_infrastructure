@@ -33,8 +33,8 @@ variable public_subnet_id {
   type        = string
 }
 
-variable ssh_pub_key_location {
-  description = "The location of the public key to be used for SSH access"
+variable public_key {
+  description = "public key to be used for SSH access"
   type        = string
 }
 
