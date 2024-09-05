@@ -62,7 +62,7 @@ module "rds" {
   # RDS variables
   vpc_id            = module.networking.vpc_id
   vpc_cidr          = module.networking.vpc_cidr
-  private_subnet_id = module.networking.private_subnets[0]
+  private_subnet_ids = module.networking.private_subnets
   rds_username      = var.rds_username
   rds_password      = var.rds_password
   kms_key_arn       = module.iam.kms_eks_key_arn

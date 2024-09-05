@@ -42,7 +42,7 @@ data "aws_iam_policy_document" "kms_policy" {
     effect = "Allow"
     principals {
       type        = "Service"
-      identifiers = ["logs.${var.region}.amazonaws.com"]
+      identifiers = ["logs.amazonaws.com"]
     }
     actions = [
       "kms:Encrypt",
@@ -59,7 +59,7 @@ data "aws_iam_policy_document" "kms_policy" {
     effect = "Allow"
     principals {
       type        = "Service"
-      identifiers = ["eks.${var.region}.amazonaws.com"]
+      identifiers = ["eks.amazonaws.com"]
     }
     actions = [
       "kms:Encrypt",
@@ -76,7 +76,7 @@ data "aws_iam_policy_document" "kms_policy" {
     effect = "Allow"
     principals {
       type        = "Service"
-      identifiers = ["rds.${var.region}.amazonaws.com"]
+      identifiers = ["rds.amazonaws.com"]
     }
     actions = [
       "kms:Encrypt",

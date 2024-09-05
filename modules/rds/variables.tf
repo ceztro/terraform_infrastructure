@@ -30,7 +30,7 @@ variable aws_iam_role {
 ## Module variables
 ##################
 
-variable private_subnet_id {
+variable private_subnet_ids {
     description = "The ID of the private subnet"
     type = string
 }

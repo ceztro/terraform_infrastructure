@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  resource.customizations: |
+    v1/ConfigMap:
+      ignoreDifferences: |
+        jsonPointers:
+        - /data/mapRoles
+        - /data/mapUsers

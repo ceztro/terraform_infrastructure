@@ -162,10 +162,9 @@ resource "aws_instance" "eks_admin_host" {
       mv ./kubectl /usr/local/bin/kubectl
 
       # Decode and save the Kubernetes YAML file
-      echo '${data.local_file.read_only_role.content_base64}' | base64 --decode > /tmp/read_only_role.yaml
-      echo '${data.local_file.github_runner_role.content_base64}' | base64 --decode > /tmp/github_runner_role.yaml
       echo '${local_file.aws_auth_configmap.content}' | base64 --decode > /tmp/configmap.yaml
-      echo '${data.local_file.deployment.content_base64}' | base64 --decode > /tmp/deployment.yaml
+      echo '${data.local_file.argo_cd_application.content_base64}' | base64 --decode > /tmp/argo_cd_application.yaml
+      echo '${data.local_file.argo_cd_ignore_configmaps.content_base64}' | base64 --decode > /tmp/argo_cd_ignore_configmaps.yaml
 
       # Switch from root to ec2-user and fetching kubeconfig
       su - ec2-user -c "aws eks update-kubeconfig --region ${var.region} --name ${var.cluster_name}"
@@ -175,11 +174,14 @@ resource "aws_instance" "eks_admin_host" {
       chmod 700 get_helm.sh
       ./get_helm.sh
 
+      # Install Argo CD
+      su - ec2-user -c "kubectl create namespace argocd"
+      su - ec2-user -c "kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml"
+
       # Apply the Kubernetes configuration
-      su - ec2-user -c "kubectl apply -f /tmp/read_only_role.yaml"
-      su - ec2-user -c "kubectl apply -f /tmp/github_runner_role.yaml"
       su - ec2-user -c "kubectl apply -f /tmp/configmap.yaml"
-      su - ec2-user -c "kubectl apply -f /tmp/deployment.yaml"
+      su - ec2-user -c "kubectl apply -f /tmp/argo_cd_application.yaml"
+      su - ec2-user -c "kubectl apply -f /tmp/argo_cd_ignore_configmaps.yaml"
     EOF
 
   # Optional: Set a tag to easily identify the instance

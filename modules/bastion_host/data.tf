@@ -175,14 +175,10 @@ resource "local_file" "aws_auth_configmap" {
   filename = "${path.module}/resources/aws_auth_configmap.yaml"
 }
 
-data "local_file" "read_only_role" {
-  filename = "./modules/bastion_host/resources/read_only_role.yaml"
+data "local_file" "argo_cd_application" {
+  filename = "./modules/bastion_host/resources/argo_cd_application.yaml"
 }
 
-data "local_file" "github_runner_role" {
-  filename = "./modules/bastion_host/resources/github_runner_role.yaml"
-}
-
-data "local_file" "deployment" {
-  filename = "./modules/bastion_host/resources/deployment.yaml"
+data "local_file" "argo_cd_ignore_configmaps" {
+  filename = "./modules/bastion_host/resources/argo_cd_ignore_configmaps.yaml"
 }
