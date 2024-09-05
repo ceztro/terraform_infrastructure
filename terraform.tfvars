@@ -21,11 +21,14 @@ instance_types = ["t3.medium"]
 pvt_desired_size = 2
 pvt_max_size  = 2
 pvt_min_size  = 1
-pblc_desired_size = 2 
-pblc_max_size = 2
-pblc_min_size = 1
 
 # bastion host variables
 bastion_host = "bastion-host"
 github_account_repo = "travel_guide"
 github_account_org = "ceztro"
+
+
+#temporary variables just for terraform plan
+my_ip = "1.1.1.1/32"
+public_key = "test"
+rds_username = "test"

@@ -52,11 +52,6 @@ variable rds_username {
     type = string
 }
 
-variable rds_password {
-    description = "The password for the RDS instance"
-    type = string
-}
-
 variable vpc_cidr {
     description = "The CIDR block for the VPC"
     type = string

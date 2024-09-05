@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: travel-guide-project
+  namespace: argocd
+spec:
+  description: Project for the Travel Guide application.
+  sourceRepos:
+    - 'https://github.com/ceztro/ArgoCD_GitOps.git'
+  destinations:
+    - namespace: travel-guide
+      server: 'https://kubernetes.default.svc'
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'

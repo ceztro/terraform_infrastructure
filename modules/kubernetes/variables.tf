@@ -97,24 +97,6 @@ variable "pvt_min_size" {
   default     = 1
 }
 
-variable "pblc_desired_size" {
-  description = "The desired number of public nodes"
-  type        = number
-  default     = 2
-}
-
-variable "pblc_max_size" {
-  description = "The maximum number of public nodes"
-  type        = number
-  default     = 3
-}
-
-variable "pblc_min_size" {
-  description = "The minimum number of public nodes"
-  type        = number
-  default     = 1
-}
-
 # Outsourced variables
 variable "private_subnets" {
   description = "A list of private subnet IDs"

@@ -8,8 +8,8 @@ resource "aws_db_instance" "rds" {
   instance_class                  = var.instance_class
   db_name                         = "${var.project_name}-rds"
   username                        = var.rds_username
-  password                        = var.rds_password
   master_user_secret_kms_key_id   = var.kms_key_arn
+  manage_master_user_password     = true
   vpc_security_group_ids          = [aws_security_group.rds_sg.id]
   db_subnet_group_name            = aws_db_subnet_group.rds_subnet_group.name
   skip_final_snapshot             = true

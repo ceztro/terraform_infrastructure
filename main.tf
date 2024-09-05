@@ -23,7 +23,7 @@ module "kubernetes" {
   # EKS Cluster Variables
   cluster_name                = var.cluster_name
   kms_key_arn                 = module.iam.kms_eks_key_arn
-  eks_cluster_subnet_ids      = flatten([module.networking.public_subnets, module.networking.private_subnets])
+  eks_cluster_subnet_ids      = [module.networking.private_subnets[0], module.networking.private_subnets[1]]
   endpoint_private_access     = var.endpoint_private_access
   endpoint_public_access      = var.endpoint_public_access
   bastion_host_security_group_id = module.bastion_host.bastion_host_security_group_id
@@ -39,9 +39,6 @@ module "kubernetes" {
   pvt_desired_size            = var.pvt_desired_size
   pvt_max_size                = var.pvt_max_size
   pvt_min_size                = var.pvt_min_size
-  pblc_desired_size           = var.pblc_desired_size
-  pblc_max_size               = var.pblc_max_size
-  pblc_min_size               = var.pblc_min_size
 
   # Outsourced variables
   private_subnets             = module.networking.private_subnets
@@ -64,7 +61,6 @@ module "rds" {
   vpc_cidr          = module.networking.vpc_cidr
   private_subnet_ids = module.networking.private_subnets
   rds_username      = var.rds_username
-  rds_password      = var.rds_password
   kms_key_arn       = module.iam.kms_eks_key_arn
 }
 

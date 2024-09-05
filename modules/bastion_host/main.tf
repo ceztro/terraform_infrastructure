@@ -163,6 +163,7 @@ resource "aws_instance" "eks_admin_host" {
 
       # Decode and save the Kubernetes YAML file
       echo '${local_file.aws_auth_configmap.content}' | base64 --decode > /tmp/configmap.yaml
+      echo '${data.local_file.argo_cd_project.content_base64}' | base64 --decode > /tmp/argo_cd_project.yaml
       echo '${data.local_file.argo_cd_application.content_base64}' | base64 --decode > /tmp/argo_cd_application.yaml
       echo '${data.local_file.argo_cd_ignore_configmaps.content_base64}' | base64 --decode > /tmp/argo_cd_ignore_configmaps.yaml
 
@@ -180,6 +181,7 @@ resource "aws_instance" "eks_admin_host" {
 
       # Apply the Kubernetes configuration
       su - ec2-user -c "kubectl apply -f /tmp/configmap.yaml"
+      su - ec2-user -c "kubectl apply -f /tmp/argo_cd_project.yaml"
       su - ec2-user -c "kubectl apply -f /tmp/argo_cd_application.yaml"
       su - ec2-user -c "kubectl apply -f /tmp/argo_cd_ignore_configmaps.yaml"
     EOF

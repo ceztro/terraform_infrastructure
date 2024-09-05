@@ -182,3 +182,7 @@ data "local_file" "argo_cd_application" {
 data "local_file" "argo_cd_ignore_configmaps" {
   filename = "./modules/bastion_host/resources/argo_cd_ignore_configmaps.yaml"
 }
+
+data "local_file" "argo_cd_project" {
+  filename = "./modules/bastion_host/resources/argo_cd_project.yaml"
+}

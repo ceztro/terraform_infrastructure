@@ -4,7 +4,7 @@ metadata:
   name: my-app
   namespace: argocd
 spec:
-  project: default
+  project: travel-guide-project
   source:
     repoURL: 'https://github.com/ceztro/ArgoCD_GitOps.git'
     path: 'travel_guide'

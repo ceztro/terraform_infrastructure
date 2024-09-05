@@ -70,26 +70,10 @@ variable pvt_min_size {
     description = "The minimum size of the private node group"
     type = number
 }
-variable pblc_desired_size {
-    description = "The desired size of the public node group"
-    type = number
-}
-variable pblc_max_size {
-    description = "The maximum size of the public node group"
-    type = number
-}
-variable pblc_min_size {
-    description = "The minimum size of the public node group"
-    type = number
-}
 
 # rds variables
 variable rds_username {
     description = "The username for the RDS instance"
-    type = string
-}
-variable rds_password {
-    description = "The password for the RDS instance"
     type = string
 }
 
