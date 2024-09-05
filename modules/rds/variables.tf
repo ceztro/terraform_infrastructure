@@ -32,7 +32,7 @@ variable aws_iam_role {
 
 variable private_subnet_ids {
     description = "The ID of the private subnet"
-    type = string
+    type = list(string)
 }
 
 variable instance_class {
