@@ -27,6 +27,8 @@ bastion_host = "bastion-host"
 github_account_repo = "travel_guide"
 github_account_org = "ceztro"
 
+db_name = "travelguideRDS"
+
 
 #temporary variables just for terraform plan
 my_ip = "1.1.1.1/32"

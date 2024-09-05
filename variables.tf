@@ -98,3 +98,7 @@ variable github_account_org {
     description = "The name of the GitHub organization"
     type = string
 }
+variable db_name {
+    description = "The name of the RDS database"
+    type = string
+}

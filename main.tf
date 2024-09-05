@@ -62,6 +62,7 @@ module "rds" {
   private_subnet_ids = module.networking.private_subnets
   rds_username      = var.rds_username
   kms_key_arn       = module.iam.kms_eks_key_arn
+  db_name           = var.db_name
 }
 
 module "iam" {

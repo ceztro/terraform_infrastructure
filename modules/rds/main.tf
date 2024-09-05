@@ -6,7 +6,7 @@ resource "aws_db_instance" "rds" {
   allocated_storage               = 20
   engine                          = var.engine
   instance_class                  = var.instance_class
-  db_name                         = "${var.project_name}-rds"
+  db_name                         = var.db_name
   username                        = var.rds_username
   master_user_secret_kms_key_id   = var.kms_key_arn
   manage_master_user_password     = true

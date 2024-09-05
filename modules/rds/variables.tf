@@ -66,3 +66,8 @@ variable kms_key_arn {
     description = "The ARN of the KMS key"
     type = string
 }
+
+variable db_name {
+    description = "The name of the database"
+    type = string
+}
