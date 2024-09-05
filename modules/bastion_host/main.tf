@@ -84,6 +84,7 @@ resource "aws_launch_configuration" "bastion_host" {
     mv ./kubectl /usr/local/bin/kubectl
 
     echo 'export PATH=$PATH:/usr/local/bin' >> /home/ec2-user/.bashrc
+    echo 'alias k=kubectl' >> /home/ec2-user/.bashrc
 
     curl -L https://github.com/99designs/aws-vault/releases/latest/download/aws-vault-linux-amd64 -o aws-vault
     chmod +x aws-vault
@@ -175,15 +176,23 @@ resource "aws_instance" "eks_admin_host" {
       chmod 700 get_helm.sh
       ./get_helm.sh
 
+      # Configure aliases
+      echo 'alias k=kubectl' >> /home/ec2-user/.bashrc
+
       # Install Argo CD
       su - ec2-user -c "kubectl create namespace argocd"
       su - ec2-user -c "kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml"
+      su - ec2-user -c "kubectl apply -f /tmp/argo_cd_ignore_configmaps.yaml"
+
+      # Restart ArgoCD Deployments to load the new configmap
+      su - ec2-user -c "kubectl rollout restart deployment argocd-server -n argocd"
+      su - ec2-user -c "kubectl rollout restart deployment argocd-dex-server -n argocd"
 
       # Apply the Kubernetes configuration
       su - ec2-user -c "kubectl apply -f /tmp/configmap.yaml"
       su - ec2-user -c "kubectl apply -f /tmp/argo_cd_project.yaml"
       su - ec2-user -c "kubectl apply -f /tmp/argo_cd_application.yaml"
-      su - ec2-user -c "kubectl apply -f /tmp/argo_cd_ignore_configmaps.yaml"
+      
     EOF
 
   # Optional: Set a tag to easily identify the instance
