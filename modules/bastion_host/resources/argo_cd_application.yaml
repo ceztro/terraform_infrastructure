@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://github.com/ceztro/ArgoCD_GitOps.git'
     path: 'travel_guide'
-    targetRevision: HEAD
+    targetRevision: dev
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: travel-guide
