@@ -11,7 +11,7 @@ spec:
     targetRevision: dev
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: travel-guide
+    namespace: travel-guide-namespace
   syncPolicy:
     automated:
       prune: true

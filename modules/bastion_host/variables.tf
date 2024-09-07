@@ -53,11 +53,6 @@ variable eks_admins_arns {
   type        = list(string)
 }
 
-variable eks_cluster_name {
-  description = "The name of the EKS cluster"
-  type        = string
-}
-
 variable eks_admins_names {
   description = "The names of the IAM users who are EKS admins"
   type        = list(string)

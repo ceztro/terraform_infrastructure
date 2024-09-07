@@ -39,9 +39,10 @@ resource "aws_eks_cluster" "this" {
 
 resource "aws_iam_openid_connect_provider" "this" {
   client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = [data.aws_eks_cluster.this.identity[0].oidc.issuer.thumbprint]
-  url             = data.aws_eks_cluster.this.identity[0].oidc.issuer
+  thumbprint_list = [] #[data.external.thumb.result.thumbprint] temporary commented out
+  url             = data.aws_eks_cluster.this.identity.0.oidc.0.issuer           
 }
+
 
 resource "aws_iam_role" "pod_role" {
   name               = "pod-role"
