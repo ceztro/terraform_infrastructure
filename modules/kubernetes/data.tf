@@ -89,9 +89,9 @@ data "aws_iam_policy_document" "pod_policy" {
   }
 }
 
-data "external" "thumb" {
-  program = ["kubergrunt", "eks", "oidc-thumbprint", "--issuer-url", aws_eks_cluster.this.identity.0.oidc.0.issuer]
-}
+# data "external" "thumb" {
+#   program = ["kubergrunt", "eks", "oidc-thumbprint", "--issuer-url", aws_eks_cluster.this.identity.0.oidc.0.issuer]
+# }
 
 ##################
 ## EKS Nodes IAM Policies
