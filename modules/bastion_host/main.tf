@@ -157,8 +157,17 @@ resource "aws_instance" "eks_admin_host" {
       # Add the default user to the Docker group
       usermod -aG docker ec2-user
 
+      # Install AWS CLI
+      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      unzip awscliv2.zip
+      sudo ./aws/install
+
+      # Switch from root to ec2-user and fetching kubeconfig
+      su - ec2-user -c "aws eks update-kubeconfig --region ${var.region} --name ${var.cluster_name}"
+      aws eks update-kubeconfig --region us-east-1 --name travel-guide-eks-cluster
+
       # Install kubectl to interact with Kubernetes
-      curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.27.2/2023-05-11/bin/linux/amd64/kubectl
+      curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.30.2/2024-07-12/bin/linux/amd64/kubectl
       chmod +x ./kubectl
       mv ./kubectl /usr/local/bin/kubectl
 
@@ -168,8 +177,7 @@ resource "aws_instance" "eks_admin_host" {
       echo '${data.local_file.argo_cd_application.content_base64}' | base64 --decode > /tmp/argo_cd_application.yaml
       echo '${data.local_file.argo_cd_ignore_configmaps.content_base64}' | base64 --decode > /tmp/argo_cd_ignore_configmaps.yaml
 
-      # Switch from root to ec2-user and fetching kubeconfig
-      su - ec2-user -c "aws eks update-kubeconfig --region ${var.region} --name ${var.cluster_name}"
+      
 
       # Install Helm
       curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
@@ -200,7 +208,6 @@ resource "aws_instance" "eks_admin_host" {
       mv /tmp/argocd-$ARGOCD_VERSION /usr/local/bin/argocd
 
       # Install AWS Load Balancer Controller
-      aws eks update-kubeconfig --region us-east-1 --name travel-guide-eks-cluster
       helm repo add eks https://aws.github.io/eks-charts
       helm repo update
       helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
