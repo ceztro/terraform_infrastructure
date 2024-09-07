@@ -349,9 +349,11 @@ data "aws_iam_policy_document" "alb_controller_policy" {
 ##################
 
 data "aws_eks_cluster" "this" {
+  depends_on = [var.cluster_name]
   name = var.cluster_name
 }
 
 data "aws_eks_cluster_auth" "this" {
+  depends_on = [var.cluster_name]
   name = var.cluster_name
 }
