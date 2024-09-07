@@ -338,6 +338,7 @@ data "aws_iam_policy_document" "alb_controller_policy" {
     ]
     resources = ["*"]
   }
+}
   
 ##################
 ## OIDC Provider
