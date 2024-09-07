@@ -52,6 +52,14 @@ variable endpoint_public_access {
     description = "Whether or not the EKS cluster has public access"
     type = bool
 }
+variable namespace {
+    description = "The namespace for the service account"
+    type = string
+}
+variable service_account_name {
+    description = "The name of the service account"
+    type = string
+}
 
 # node group variables
 variable instance_types {

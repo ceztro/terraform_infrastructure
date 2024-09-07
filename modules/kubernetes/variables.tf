@@ -31,6 +31,16 @@ variable bastion_host_security_group_id {
   type        = string
 }
 
+variable namespace {
+  description = "The namespace for the service account"
+  type        = string
+}
+
+variable service_account_name {
+  description = "The name of the service account"
+  type        = string
+}
+
 # Project variables
 variable "env" {
   description = "The environment for the EKS cluster (e.g., dev, staging, prod)"

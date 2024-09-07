@@ -34,6 +34,31 @@ resource "aws_eks_cluster" "this" {
 }
 
 ##################
+## OIDC
+##################
+
+resource "aws_iam_openid_connect_provider" "this" {
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = [data.aws_eks_cluster.this.identity[0].oidc.issuer.thumbprint]
+  url             = data.aws_eks_cluster.this.identity[0].oidc.issuer
+}
+
+resource "aws_iam_role" "pod_role" {
+  name               = "pod-role"
+  assume_role_policy = data.aws_iam_policy_document.pod_role_trust_relationship.json
+}
+
+resource "aws_iam_policy" "pod_role_policy" {
+  name   = "pod-role-policy"
+  policy = data.aws_iam_policy_document.pod_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "attach_pod_policy" {
+  role       = aws_iam_role.pod_role.name
+  policy_arn = aws_iam_policy.pod_role_policy.arn
+}
+
+##################
 ## EKS Cluster IAM ROLE
 ##################
 
