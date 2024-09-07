@@ -60,7 +60,7 @@ resource "random_id" "lc_id" {
 resource "aws_launch_configuration" "bastion_host" {
   depends_on = [
     aws_instance.eks_admin_host,
-    var.cluster_name
+    var.eks_cluster_name
   ]
   name          = "${var.bastion_host}-config-${formatdate("YYYYMMDDHHmmss", timestamp())}-${random_id.lc_id.hex}"# Ensures uniqueness
   image_id      = data.aws_ami.amazon_linux.id  # Uses a data source to fetch the latest Amazon Linux AMI
@@ -133,7 +133,7 @@ resource "aws_key_pair" "deployer" {
 ##################
 
 resource "aws_instance" "eks_admin_host" {
-  depends_on = [local_file.aws_auth_configmap, var.cluster_name]   
+  depends_on = [local_file.aws_auth_configmap, var.eks_cluster_name]   
 
   ami           = data.aws_ami.amazon_linux.id
   instance_type = "t2.micro"
@@ -232,7 +232,7 @@ resource "aws_iam_instance_profile" "ec2_admin_instance_profile" {
 ##################
 
 resource "aws_instance" "github_actions_runner" {
-  depends_on = [local_file.aws_auth_configmap, var.cluster_name]   
+  depends_on = [local_file.aws_auth_configmap, var.eks_cluster_name]   
 
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
