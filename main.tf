@@ -89,6 +89,7 @@ module "bastion_host" {
   eks_admins_names       = module.iam.usernames
   github_account_repo    = var.github_account_repo
   github_account_org     = var.github_account_org
+  eks_cluster_name       = module.kubernetes.eks_cluster_name
 
   #shared variables
   region           = var.region

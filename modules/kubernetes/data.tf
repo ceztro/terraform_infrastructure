@@ -343,7 +343,7 @@ data "aws_iam_policy_document" "alb_controller_policy" {
     resources = ["*"]
   }
 }
-  
+
 ##################
 ## OIDC Provider
 ##################
@@ -360,4 +360,8 @@ data "aws_eks_cluster" "this" {
 data "aws_eks_cluster_auth" "this" {
   depends_on = [null_resource.wait_for_eks]
   name = var.cluster_name
+}
+
+data "external" "fetch_thumbprint" {
+  program = ["./modules/kubernetes/resources/thumbprint_fetch.sh", "oidc.eks.${var.region}.amazonaws.com"]
 }
