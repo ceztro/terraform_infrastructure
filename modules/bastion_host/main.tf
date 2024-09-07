@@ -158,7 +158,7 @@ resource "aws_instance" "eks_admin_host" {
       usermod -aG docker ec2-user
 
       # Install kubectl to interact with Kubernetes
-      curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.18.9/2020-11-02/bin/linux/amd64/kubectl
+      curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.27.2/2023-05-11/bin/linux/amd64/kubectl
       chmod +x ./kubectl
       mv ./kubectl /usr/local/bin/kubectl
 
@@ -200,6 +200,7 @@ resource "aws_instance" "eks_admin_host" {
       mv /tmp/argocd-$ARGOCD_VERSION /usr/local/bin/argocd
 
       # Install AWS Load Balancer Controller
+      aws eks update-kubeconfig --region us-east-1 --name travel-guide-eks-cluster
       helm repo add eks https://aws.github.io/eks-charts
       helm repo update
       helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
@@ -208,8 +209,7 @@ resource "aws_instance" "eks_admin_host" {
         --set serviceAccount.create=false \
         --set serviceAccount.name=aws-load-balancer-controller \
         --set region=${var.region} \
-        --set vpcId=${var.vpc_id} \
-
+        --set vpcId=${var.vpc_id} 
 
       # Forward port 8080 to access Argo CD
       su - ec2-user -c "nohup kubectl port-forward svc/argocd-server -n argocd 8080:443 > port-forward.log 2>&1 &"
