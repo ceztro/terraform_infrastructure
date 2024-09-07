@@ -57,6 +57,39 @@ data "aws_iam_policy_document" "eks_cluster_trust_relationship_policy" {
 }
 
 ##################
+## OIDC Policies
+##################
+
+data "aws_iam_policy_document" "pod_role_trust_relationship" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.this.arn]
+    }
+
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "oidc.eks.${var.region}.amazonaws.com/id/${data.aws_eks_cluster.this.identity[0].oidc.issuer}:sub"
+      values   = ["system:serviceaccount:${var.namespace}:${var.service_account_name}"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "pod_policy" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "secretsmanager:GetSecretValue"
+    ]
+    resources = ["*"]
+  }
+}
+
+##################
 ## EKS Nodes IAM Policies
 ##################
 
@@ -305,4 +338,15 @@ data "aws_iam_policy_document" "alb_controller_policy" {
     ]
     resources = ["*"]
   }
+  
+##################
+## OIDC Provider
+##################
+
+data "aws_eks_cluster" "this" {
+  name = var.cluster_name
+}
+
+data "aws_eks_cluster_auth" "this" {
+  name = var.cluster_name
 }

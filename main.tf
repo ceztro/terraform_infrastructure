@@ -27,6 +27,8 @@ module "kubernetes" {
   endpoint_private_access     = var.endpoint_private_access
   endpoint_public_access      = var.endpoint_public_access
   bastion_host_security_group_id = module.bastion_host.bastion_host_security_group_id
+  namespace                   = var.namespace
+  service_account_name        = var.service_account_name
 
   # Project variables
   env                         = var.env
