@@ -195,9 +195,9 @@ resource "aws_instance" "eks_admin_host" {
 
       # Install Argo CD CLI
       ARGOCD_VERSION=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
-      curl -sSL -o /tmp/argocd-${ARGOCD_VERSION} https://github.com/argoproj/argo-cd/releases/download/${ARGOCD_VERSION}/argocd-linux-amd64
-      chmod +x /tmp/argocd-${ARGOCD_VERSION}
-      sudo mv /tmp/argocd-${ARGOCD_VERSION} /usr/local/bin/argocd
+      curl -sSL -o /tmp/argocd-$ARGOCD_VERSION https://github.com/argoproj/argo-cd/releases/download/ARGOCD_VERSION/argocd-linux-amd64
+      chmod +x /tmp/argocd-$ARGOCD_VERSION
+      mv /tmp/argocd-$ARGOCD_VERSION /usr/local/bin/argocd
 
       # Install AWS Load Balancer Controller
       helm repo add eks https://aws.github.io/eks-charts
