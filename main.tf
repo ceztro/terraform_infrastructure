@@ -84,7 +84,6 @@ module "bastion_host" {
   cluster_name           = var.cluster_name
   bastion_host           = var.bastion_host
   eks_admins_arns        = [for user in module.iam.usernames : "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/${user}"]
-  eks_cluster_name       = module.kubernetes.eks_cluster_name
   eks_admins_names       = module.iam.usernames
   github_account_repo    = var.github_account_repo
   github_account_org     = var.github_account_org

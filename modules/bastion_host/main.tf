@@ -60,7 +60,7 @@ resource "random_id" "lc_id" {
 resource "aws_launch_configuration" "bastion_host" {
   depends_on = [
     aws_instance.eks_admin_host,
-    var.eks_cluster_name
+    var.cluster_name
   ]
   name          = "${var.bastion_host}-config-${formatdate("YYYYMMDDHHmmss", timestamp())}-${random_id.lc_id.hex}"# Ensures uniqueness
   image_id      = data.aws_ami.amazon_linux.id  # Uses a data source to fetch the latest Amazon Linux AMI
@@ -133,7 +133,7 @@ resource "aws_key_pair" "deployer" {
 ##################
 
 resource "aws_instance" "eks_admin_host" {
-  depends_on = [local_file.aws_auth_configmap, var.eks_cluster_name]   
+  depends_on = [local_file.aws_auth_configmap, var.cluster_name]   
 
   ami           = data.aws_ami.amazon_linux.id
   instance_type = "t2.micro"
@@ -192,6 +192,27 @@ resource "aws_instance" "eks_admin_host" {
       su - ec2-user -c "kubectl apply -f /tmp/configmap.yaml"
       su - ec2-user -c "kubectl apply -f /tmp/argo_cd_project.yaml"
       su - ec2-user -c "kubectl apply -f /tmp/argo_cd_application.yaml"
+
+      # Install Argo CD CLI
+      ARGOCD_VERSION=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+      curl -sSL -o /tmp/argocd-${ARGOCD_VERSION} https://github.com/argoproj/argo-cd/releases/download/${ARGOCD_VERSION}/argocd-linux-amd64
+      chmod +x /tmp/argocd-${ARGOCD_VERSION}
+      sudo mv /tmp/argocd-${ARGOCD_VERSION} /usr/local/bin/argocd
+
+      # Install AWS Load Balancer Controller
+      helm repo add eks https://aws.github.io/eks-charts
+      helm repo update
+      helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+        -n kube-system \
+        --set clusterName=${var.cluster_name} \
+        --set serviceAccount.create=false \
+        --set serviceAccount.name=aws-load-balancer-controller \
+        --set region=${var.region} \
+        --set vpcId=${var.vpc_id} \
+
+
+      # Forward port 8080 to access Argo CD
+      su - ec2-user -c "nohup kubectl port-forward svc/argocd-server -n argocd 8080:443 > port-forward.log 2>&1 &"
       
     EOF
 
@@ -211,7 +232,7 @@ resource "aws_iam_instance_profile" "ec2_admin_instance_profile" {
 ##################
 
 resource "aws_instance" "github_actions_runner" {
-  depends_on = [local_file.aws_auth_configmap, var.eks_cluster_name]   
+  depends_on = [local_file.aws_auth_configmap, var.cluster_name]   
 
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"

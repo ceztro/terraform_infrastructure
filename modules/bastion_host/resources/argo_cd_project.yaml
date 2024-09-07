@@ -8,7 +8,7 @@ spec:
   sourceRepos:
     - 'https://github.com/ceztro/ArgoCD_GitOps.git'
   destinations:
-    - namespace: travel-guide
+    - namespace: travel-guide-namespace
       server: 'https://kubernetes.default.svc'
   clusterResourceWhitelist:
     - group: '*'
