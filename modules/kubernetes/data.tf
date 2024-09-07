@@ -348,12 +348,16 @@ data "aws_iam_policy_document" "alb_controller_policy" {
 ## OIDC Provider
 ##################
 
+resource "null_resource" "wait_for_eks" {
+  depends_on = [aws_eks_cluster.this]
+}
+
 data "aws_eks_cluster" "this" {
-  depends_on = [var.cluster_name]
+  depends_on = [null_resource.wait_for_eks]
   name = var.cluster_name
 }
 
 data "aws_eks_cluster_auth" "this" {
-  depends_on = [var.cluster_name]
+  depends_on = [null_resource.wait_for_eks]
   name = var.cluster_name
 }
