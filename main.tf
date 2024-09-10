@@ -91,6 +91,7 @@ module "bastion_host" {
   github_account_repo    = var.github_account_repo
   github_account_org     = var.github_account_org
   eks_cluster_name       = module.kubernetes.eks_cluster_name
+  alb_controller_service_account_name = var.alb_controller_service_account_name
 
   #shared variables
   region           = var.region
