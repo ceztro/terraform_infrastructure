@@ -68,7 +68,7 @@ resource "aws_iam_role" "k8s_alb_role" {
 }
 
 resource "aws_iam_policy" "k8s_alb_role_policy" {
-  name   = "pod-role-policy"
+  name   = "k8s_alb_role_policy"
   policy = data.aws_iam_policy_document.alb_controller_policy.json
 }
 
