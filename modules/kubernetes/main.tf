@@ -59,6 +59,25 @@ resource "aws_iam_role_policy_attachment" "attach_pod_policy" {
 }
 
 ##################
+## K8s ALB Role
+##################
+
+resource "aws_iam_role" "k8s_alb_role" {
+  name               = "k8s_alb_role"
+  assume_role_policy = data.aws_iam_policy_document.alb_controller_trust_relationship.json
+}
+
+resource "aws_iam_policy" "k8s_alb_role_policy" {
+  name   = "pod-role-policy"
+  policy = data.aws_iam_policy_document.alb_controller_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "attach_k8s_alb_policy" {
+  role       = aws_iam_role.k8s_alb_role.name
+  policy_arn = aws_iam_policy.k8s_alb_role_policy.arn
+}
+
+##################
 ## EKS Cluster IAM ROLE
 ##################
 

@@ -60,6 +60,10 @@ variable service_account_name {
     description = "The name of the service account"
     type = string
 }
+variable alb_controller_service_account_name {
+    description = "The name of the service account for the ALB controller"
+    type = string
+}
 
 # node group variables
 variable instance_types {

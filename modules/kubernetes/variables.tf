@@ -41,6 +41,11 @@ variable service_account_name {
   type        = string
 }
 
+variable alb_controller_service_account_name {
+  description = "The name of the service account for the ALB controller"
+  type        = string
+}
+
 # Project variables
 variable "env" {
   description = "The environment for the EKS cluster (e.g., dev, staging, prod)"
