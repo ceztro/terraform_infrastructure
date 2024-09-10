@@ -163,8 +163,8 @@ resource "aws_instance" "eks_admin_host" {
       sudo ./aws/install
 
       # Switch from root to ec2-user and fetching kubeconfig
-      su - ec2-user -c "aws eks update-kubeconfig --region ${var.region} --name ${var.cluster_name}"
-      aws eks update-kubeconfig --region us-east-1 --name travel-guide-eks-cluster
+      su - ec2-user -c "aws eks update-kubeconfig --region ${var.region} --name ${var.eks_cluster_name}"
+      aws eks update-kubeconfig --region us-east-1 --name ${var.eks_cluster_name}
 
       # Install kubectl to interact with Kubernetes
       curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.30.2/2024-07-12/bin/linux/amd64/kubectl
@@ -176,8 +176,6 @@ resource "aws_instance" "eks_admin_host" {
       echo '${data.local_file.argo_cd_project.content_base64}' | base64 --decode > /tmp/argo_cd_project.yaml
       echo '${data.local_file.argo_cd_application.content_base64}' | base64 --decode > /tmp/argo_cd_application.yaml
       echo '${data.local_file.argo_cd_ignore_configmaps.content_base64}' | base64 --decode > /tmp/argo_cd_ignore_configmaps.yaml
-
-      
 
       # Install Helm
       curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
@@ -212,11 +210,11 @@ resource "aws_instance" "eks_admin_host" {
       helm repo update
       helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
         -n kube-system \
-        --set clusterName=${var.cluster_name} \
+        --set clusterName=${var.eks_cluster_name} \
         --set serviceAccount.create=false \
         --set serviceAccount.name=${var.alb_controller_service_account_name} \
         --set region=${var.region} \
-        --set vpcId=${var.vpc_id} 
+        --set vpcId=${var.vpc_id}
 
       # Forward port 8080 to access Argo CD
       su - ec2-user -c "nohup kubectl port-forward svc/argocd-server -n argocd 8080:443 > port-forward.log 2>&1 &"

@@ -73,7 +73,7 @@ data "aws_iam_policy_document" "pod_role_trust_relationship" {
 
     condition {
       test     = "StringEquals"
-      variable = "oidc.eks.${var.region}.amazonaws.com/id/${data.aws_eks_cluster.this.identity.0.oidc.0.issuer}:sub"
+      variable = "${data.aws_eks_cluster.this.identity.0.oidc.0.issuer}:sub"
       values   = ["system:serviceaccount:${var.namespace}:${var.service_account_name}"]
     }
   }
@@ -127,7 +127,7 @@ data "aws_iam_policy_document" "alb_controller_trust_relationship" {
 
     condition {
       test     = "StringEquals"
-      variable = "oidc.eks.${var.region}.amazonaws.com/id/${data.aws_eks_cluster.this.identity.0.oidc.0.issuer}:sub"
+      variable = "${data.aws_eks_cluster.this.identity.0.oidc.0.issuer}:sub"
       values   = ["system:serviceaccount:kube-system:${var.alb_controller_service_account_name}"]
     }
   }
