@@ -214,7 +214,7 @@ resource "aws_instance" "eks_admin_host" {
         -n kube-system \
         --set clusterName=${var.cluster_name} \
         --set serviceAccount.create=false \
-        --set serviceAccount.name=aws-load-balancer-controller \
+        --set serviceAccount.name=${var.alb_controller_service_account_name} \
         --set region=${var.region} \
         --set vpcId=${var.vpc_id} 
 

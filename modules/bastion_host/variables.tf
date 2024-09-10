@@ -77,3 +77,8 @@ variable eks_cluster_name {
   description = "The name of the EKS cluster"
   type        = string
 }
+
+variable alb_controller_service_account_name {
+  description = "The name of the service account for the ALB controller"
+  type        = string
+}
