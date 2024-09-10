@@ -29,6 +29,7 @@ module "kubernetes" {
   bastion_host_security_group_id = module.bastion_host.bastion_host_security_group_id
   namespace                   = var.namespace
   service_account_name        = var.service_account_name
+  alb_controller_service_account_name = var.alb_controller_service_account_name
 
   # Project variables
   env                         = var.env

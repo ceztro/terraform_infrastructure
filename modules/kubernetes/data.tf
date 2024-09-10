@@ -114,6 +114,25 @@ data "aws_iam_policy_document" "eks_node_trust_relationship_policy" {
 ## ALB Controller IAM Policies
 ##################
 
+data "aws_iam_policy_document" "alb_controller_trust_relationship" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.this.arn]
+    }
+
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "oidc.eks.${var.region}.amazonaws.com/id/${data.aws_eks_cluster.this.identity.0.oidc.0.issuer}:sub"
+      values   = ["system:serviceaccount:kube-system:${var.alb_controller_service_account_name}"]
+    }
+  }
+}
+
 data "aws_iam_policy_document" "alb_controller_policy" {
   statement {
     effect = "Allow"
