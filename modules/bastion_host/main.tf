@@ -147,6 +147,13 @@ resource "aws_instance" "eks_admin_host" {
   # Replace with your security group ID
   vpc_security_group_ids = [aws_security_group.bastion_host.id]
 
+  # Trigger replacement when user_data changes
+  lifecycle {
+    replace_triggered_by = [
+      self.user_data
+    ]
+  }
+
   # User data to run commands on instance start
   user_data = <<-EOF
       #!/bin/bash
@@ -220,7 +227,7 @@ resource "aws_instance" "eks_admin_host" {
         --kubeconfig /root/.kube/config
 
       # Forward port 8080 to access Argo CD
-      su - ec2-user -c "nohup kubectl port-forward svc/argocd-server -n argocd 8080:443 > port-forward.log 2>&1 &"
+      nohup kubectl port-forward svc/argocd-server -n argocd 8080:443 > port-forward.log 2>&1 &
       
     EOF
 
