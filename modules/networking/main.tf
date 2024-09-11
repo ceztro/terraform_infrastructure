@@ -44,7 +44,7 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true #because we create here public subnets
 
   tags = merge(
-    { "Env" = var.env, "Name" = "${var.project_name}-public-subnet-${count.index}" },
+    { "Env" = var.env, "Name" = "${var.project_name}-public-subnet-${count.index}", "kubernetes.io/role/elb" = "1" },
     var.project_tags
   )
 }
@@ -169,7 +169,7 @@ resource "aws_security_group" "public_sg" {
   vpc_id = aws_vpc.this.id
 
   tags = merge(
-    { "Env" = var.env, "Name" = "${var.project_name}-public-sg", "kubernetes.io/role/elb" = "1" },
+    { "Env" = var.env, "Name" = "${var.project_name}-public-sg" },
     var.project_tags
   )
 }
