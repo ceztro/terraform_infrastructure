@@ -162,9 +162,10 @@ resource "aws_instance" "eks_admin_host" {
       unzip awscliv2.zip
       sudo ./aws/install
 
-      # Switch from root to ec2-user and fetching kubeconfig
-      su - ec2-user -c "aws eks update-kubeconfig --region ${var.region} --name ${var.eks_cluster_name}"
-      aws eks update-kubeconfig --region us-east-1 --name ${var.eks_cluster_name}
+      # Fetch kubeconfig and apply to both root and ec2-user
+      aws eks update-kubeconfig --region ${var.region} --name ${var.eks_cluster_name} --kubeconfig /home/ec2-user/.kube/config
+      aws eks update-kubeconfig --region ${var.region} --name ${var.eks_cluster_name} --kubeconfig /root/.kube/config
+      chown ec2-user:ec2-user /home/ec2-user/.kube/config
 
       # Install kubectl to interact with Kubernetes
       curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.30.2/2024-07-12/bin/linux/amd64/kubectl
@@ -184,6 +185,7 @@ resource "aws_instance" "eks_admin_host" {
 
       # Configure aliases
       echo 'alias k=kubectl' >> /home/ec2-user/.bashrc
+      echo 'alias k=kubectl' >> /root/.bashrc
 
       # Install Argo CD
       su - ec2-user -c "kubectl create namespace argocd"
@@ -205,7 +207,7 @@ resource "aws_instance" "eks_admin_host" {
       chmod +x /tmp/argocd-$ARGOCD_VERSION
       mv /tmp/argocd-$ARGOCD_VERSION /usr/local/bin/argocd
 
-      # Install AWS Load Balancer Controller
+      # Install AWS Load Balancer Controller with correct kubeconfig
       helm repo add eks https://aws.github.io/eks-charts
       helm repo update
       helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
@@ -214,7 +216,8 @@ resource "aws_instance" "eks_admin_host" {
         --set serviceAccount.create=false \
         --set serviceAccount.name=${var.alb_controller_service_account_name} \
         --set region=${var.region} \
-        --set vpcId=${var.vpc_id}
+        --set vpcId=${var.vpc_id} \
+        --kubeconfig /root/.kube/config
 
       # Forward port 8080 to access Argo CD
       su - ec2-user -c "nohup kubectl port-forward svc/argocd-server -n argocd 8080:443 > port-forward.log 2>&1 &"
