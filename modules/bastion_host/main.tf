@@ -229,7 +229,7 @@ resource "aws_instance" "eks_admin_host" {
       done
 
       # Forward port 8080 to access Argo CD
-      su - ec2-user -c "nohup kubectl port-forward svc/argocd-server -n argocd 8080:443 --kubeconfig /root/.kube/config > port-forward.log 2>&1 &"
+      su - ec2-user -c "nohup kubectl port-forward svc/argocd-server -n argocd 8080:443 --kubeconfig /home/ec2-user/.kube/config > port-forward.log 2>&1 &"
       
     EOF
 
