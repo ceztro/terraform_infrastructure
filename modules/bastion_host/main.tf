@@ -147,6 +147,9 @@ resource "aws_instance" "eks_admin_host" {
   # Replace with your security group ID
   vpc_security_group_ids = [aws_security_group.bastion_host.id]
 
+  # Recreate on user_data change
+  user_data_replace_on_change = true
+
   # User data to run commands on instance start
   user_data = <<-EOF
       #!/bin/bash
@@ -253,6 +256,9 @@ resource "aws_instance" "github_actions_runner" {
 
   # Replace with your security group ID
   vpc_security_group_ids = [aws_security_group.bastion_host.id]
+
+  # Recreate on user_data change
+  user_data_replace_on_change = true
 
   # User data to run commands on instance start
   user_data = <<-EOF
