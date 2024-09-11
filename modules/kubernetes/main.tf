@@ -37,45 +37,45 @@ resource "aws_eks_cluster" "this" {
 ## OIDC
 ##################
 
-# resource "aws_iam_openid_connect_provider" "this" {
-#   client_id_list  = ["sts.amazonaws.com"]
-#   thumbprint_list = [data.external.fetch_thumbprint.result.thumbprint]
-#   url             = data.aws_eks_cluster.this.identity.0.oidc.0.issuer           
-# }
+resource "aws_iam_openid_connect_provider" "this" {
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = [data.external.fetch_thumbprint.result.thumbprint]
+  url             = data.aws_eks_cluster.this.identity.0.oidc.0.issuer           
+}
 
-# resource "aws_iam_role" "pod_role" {
-#   name               = "pod-role"
-#   assume_role_policy = data.aws_iam_policy_document.pod_role_trust_relationship.json
-# }
+resource "aws_iam_role" "pod_role" {
+  name               = "pod-role"
+  assume_role_policy = data.aws_iam_policy_document.pod_role_trust_relationship.json
+}
 
-# resource "aws_iam_policy" "pod_role_policy" {
-#   name   = "pod-role-policy"
-#   policy = data.aws_iam_policy_document.pod_policy.json
-# }
+resource "aws_iam_policy" "pod_role_policy" {
+  name   = "pod-role-policy"
+  policy = data.aws_iam_policy_document.pod_policy.json
+}
 
-# resource "aws_iam_role_policy_attachment" "attach_pod_policy" {
-#   role       = aws_iam_role.pod_role.name
-#   policy_arn = aws_iam_policy.pod_role_policy.arn
-# }
+resource "aws_iam_role_policy_attachment" "attach_pod_policy" {
+  role       = aws_iam_role.pod_role.name
+  policy_arn = aws_iam_policy.pod_role_policy.arn
+}
 
 ##################
 ## K8s ALB Role
 ##################
 
-# resource "aws_iam_role" "k8s_alb_role" {
-#   name               = "k8s_alb_role"
-#   assume_role_policy = data.aws_iam_policy_document.alb_controller_trust_relationship.json
-# }
+resource "aws_iam_role" "k8s_alb_role" {
+  name               = "k8s_alb_role"
+  assume_role_policy = data.aws_iam_policy_document.alb_controller_trust_relationship.json
+}
 
-# resource "aws_iam_policy" "k8s_alb_role_policy" {
-#   name   = "k8s_alb_role_policy"
-#   policy = data.aws_iam_policy_document.alb_controller_policy.json
-# }
+resource "aws_iam_policy" "k8s_alb_role_policy" {
+  name   = "k8s_alb_role_policy"
+  policy = data.aws_iam_policy_document.alb_controller_policy.json
+}
 
-# resource "aws_iam_role_policy_attachment" "attach_k8s_alb_policy" {
-#   role       = aws_iam_role.k8s_alb_role.name
-#   policy_arn = aws_iam_policy.k8s_alb_role_policy.arn
-# }
+resource "aws_iam_role_policy_attachment" "attach_k8s_alb_policy" {
+  role       = aws_iam_role.k8s_alb_role.name
+  policy_arn = aws_iam_policy.k8s_alb_role_policy.arn
+}
 
 ##################
 ## EKS Cluster IAM ROLE
