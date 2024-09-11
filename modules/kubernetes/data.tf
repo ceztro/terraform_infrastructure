@@ -167,7 +167,8 @@ data "aws_iam_policy_document" "alb_controller_policy" {
       "elasticloadbalancing:DescribeTargetGroupAttributes",
       "elasticloadbalancing:DescribeTargetHealth",
       "elasticloadbalancing:DescribeTags",
-      "elasticloadbalancing:DescribeTrustStores"
+      "elasticloadbalancing:DescribeTrustStores",
+      "elasticloadbalancing:AddTags"
     ]
     resources = ["*"]
   }
