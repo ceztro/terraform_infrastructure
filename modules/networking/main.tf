@@ -129,7 +129,7 @@ resource "aws_subnet" "private" {
   map_public_ip_on_launch = false #because we create private subnets
 
   tags = merge(
-    { "Env" = var.env, "Name" = "${var.project_name}-private-subnet-${count.index}" },
+    { "Env" = var.env, "Name" = "${var.project_name}-private-subnet-${count.index}", "kubernetes.io/role/internal-elb" = "1" },
     var.project_tags
   )
 }
