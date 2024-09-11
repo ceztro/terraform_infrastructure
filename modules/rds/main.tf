@@ -3,6 +3,7 @@
 ##################
 
 resource "aws_db_instance" "rds" {
+  identifier                      = var.db_identifier
   allocated_storage               = 20
   engine                          = var.engine
   instance_class                  = var.instance_class

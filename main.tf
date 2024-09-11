@@ -66,6 +66,7 @@ module "rds" {
   rds_username      = var.rds_username
   kms_key_arn       = module.iam.kms_eks_key_arn
   db_name           = var.db_name
+  db_identifier     = var.db_identifier
 }
 
 module "iam" {

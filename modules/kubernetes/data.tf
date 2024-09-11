@@ -83,7 +83,8 @@ data "aws_iam_policy_document" "pod_policy" {
   statement {
     effect = "Allow"
     actions = [
-      "secretsmanager:GetSecretValue"
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:ListSecrets"
     ]
     resources = ["*"]
   }
