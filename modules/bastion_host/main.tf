@@ -223,13 +223,13 @@ resource "aws_instance" "eks_admin_host" {
         --kubeconfig /root/.kube/config
 
       # Wait until argocd-server service is available
-      until kubectl get svc argocd-server -n argocd; do
+      until kubectl get svc argocd-server -n argocd --kubeconfig /root/.kube/config; do
           echo "Waiting for ArgoCD server to be available..."
           sleep 10
       done
 
       # Forward port 8080 to access Argo CD
-      nohup kubectl port-forward svc/argocd-server -n argocd 8080:443 > port-forward.log 2>&1 &
+      nohup kubectl port-forward svc/argocd-server -n argocd 8080:443 --kubeconfig /root/.kube/config > port-forward.log 2>&1 &
       
     EOF
 

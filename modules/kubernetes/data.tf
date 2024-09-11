@@ -73,7 +73,7 @@ data "aws_iam_policy_document" "pod_role_trust_relationship" {
 
     condition {
       test     = "StringEquals"
-      variable = "${data.aws_eks_cluster.this.identity.0.oidc.0.issuer}:sub"
+      variable = "${replace(data.aws_eks_cluster.this.identity.0.oidc.0.issuer, "https://", "")}:sub"
       values   = ["system:serviceaccount:${var.namespace}:${var.service_account_name}"]
     }
   }
