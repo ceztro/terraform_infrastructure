@@ -96,6 +96,18 @@ data "aws_iam_policy_document" "pod_policy" {
     ]
     resources = ["*"]
   }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",                   
+      "kms:Encrypt",                   
+      "kms:GenerateDataKey",            
+      "kms:GenerateDataKeyWithoutPlaintext", 
+      "kms:DescribeKey"                 
+    ]
+    resources = [var.kms_key_arn]       
+  }
 }
 
 ##################
