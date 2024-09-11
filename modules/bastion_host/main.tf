@@ -224,11 +224,9 @@ resource "aws_instance" "eks_admin_host" {
       
     EOF
 
-  # Generate hash of the user_data for replace_triggered_by
+  # Replace when user_data changes
   lifecycle {
-    replace_triggered_by = [
-      sha1(user_data)
-    ]
+    replace_triggered_by = [user_data]
   }
 
   # Optional: Set a tag to easily identify the instance
