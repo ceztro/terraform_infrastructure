@@ -89,6 +89,11 @@ variable rds_username {
     type = string
 }
 
+variable db_identifier {
+    description = "The identifier for the RDS instance"
+    type = string
+}
+
 # bastion host variables
 variable my_ip {
     description = "Your IP address for SSH access"
