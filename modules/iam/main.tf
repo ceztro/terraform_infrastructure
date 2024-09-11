@@ -52,37 +52,6 @@ resource "aws_iam_user_policy" "eks_admins_user_policy" {
 # }
 
 
-# ##################
-# ## OIDC     ##
-# ##################
-
-# resource "aws_iam_openid_connect_provider" "this" {
-#   url = "https://token.actions.githubusercontent.com"
-
-#   client_id_list = [
-#     "sts.amazonaws.com",
-#   ]
-
-#   thumbprint_list = ["ffffffffffffffffffffffffffffffffffffffff"]
-# }
-
-# resource "aws_iam_role" "oidc" {
-#   name               = "github_oidc_role"
-#   assume_role_policy = data.aws_iam_policy_document.oidc_trust_policy.json
-# }
-
-# resource "aws_iam_policy" "oidc_role_policy" {
-#   name        = "ci-deploy-policy"
-#   description = "Policy used for deployments on CI"
-#   policy      = data.aws_iam_policy_document.oidc_deploy_policy.json
-# }
-
-# resource "aws_iam_role_policy_attachment" "oidc_policy_attachment" {
-#   role       = aws_iam_role.oidc.name
-#   policy_arn = aws_iam_policy.oidc_role_policy.arn
-# }
-
-
 ##################
 ## Github Actions IAM User
 ##################

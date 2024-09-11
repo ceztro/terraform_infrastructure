@@ -60,24 +60,24 @@ data "aws_iam_policy_document" "eks_cluster_trust_relationship_policy" {
 ## OIDC Policies
 ##################
 
-# data "aws_iam_policy_document" "pod_role_trust_relationship" {
-#   statement {
-#     effect = "Allow"
+data "aws_iam_policy_document" "pod_role_trust_relationship" {
+  statement {
+    effect = "Allow"
 
-#     principals {
-#       type        = "Federated"
-#       identifiers = [aws_iam_openid_connect_provider.this.arn]
-#     }
+    principals {
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.this.arn]
+    }
 
-#     actions = ["sts:AssumeRoleWithWebIdentity"]
+    actions = ["sts:AssumeRoleWithWebIdentity"]
 
-#     condition {
-#       test     = "StringEquals"
-#       variable = "${data.aws_eks_cluster.this.identity.0.oidc.0.issuer}:sub"
-#       values   = ["system:serviceaccount:${var.namespace}:${var.service_account_name}"]
-#     }
-#   }
-# }
+    condition {
+      test     = "StringEquals"
+      variable = "${data.aws_eks_cluster.this.identity.0.oidc.0.issuer}:sub"
+      values   = ["system:serviceaccount:${var.namespace}:${var.service_account_name}"]
+    }
+  }
+}
 
 data "aws_iam_policy_document" "pod_policy" {
   statement {
@@ -114,24 +114,24 @@ data "aws_iam_policy_document" "eks_node_trust_relationship_policy" {
 ## ALB Controller IAM Policies
 ##################
 
-# data "aws_iam_policy_document" "alb_controller_trust_relationship" {
-#   statement {
-#     effect = "Allow"
+data "aws_iam_policy_document" "alb_controller_trust_relationship" {
+  statement {
+    effect = "Allow"
 
-#     principals {
-#       type        = "Federated"
-#       identifiers = [aws_iam_openid_connect_provider.this.arn]
-#     }
+    principals {
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.this.arn]
+    }
 
-#     actions = ["sts:AssumeRoleWithWebIdentity"]
+    actions = ["sts:AssumeRoleWithWebIdentity"]
 
-#     condition {
-#       test     = "StringEquals"
-#       variable = "${data.aws_eks_cluster.this.identity.0.oidc.0.issuer}:sub"
-#       values   = ["system:serviceaccount:kube-system:${var.alb_controller_service_account_name}"]
-#     }
-#   }
-# }
+    condition {
+      test     = "StringEquals"
+      variable = "${data.aws_eks_cluster.this.identity.0.oidc.0.issuer}:sub"
+      values   = ["system:serviceaccount:kube-system:${var.alb_controller_service_account_name}"]
+    }
+  }
+}
 
 data "aws_iam_policy_document" "alb_controller_policy" {
   statement {
@@ -371,15 +371,15 @@ resource "null_resource" "wait_for_eks" {
   depends_on = [aws_eks_cluster.this]
 }
 
-# data "aws_eks_cluster" "this" {
-#   depends_on = [null_resource.wait_for_eks]
-#   name = var.cluster_name
-# }
+data "aws_eks_cluster" "this" {
+  depends_on = [null_resource.wait_for_eks]
+  name = var.cluster_name
+}
 
-# data "aws_eks_cluster_auth" "this" {
-#   depends_on = [null_resource.wait_for_eks]
-#   name = var.cluster_name
-# }
+data "aws_eks_cluster_auth" "this" {
+  depends_on = [null_resource.wait_for_eks]
+  name = var.cluster_name
+}
 
 data "external" "fetch_thumbprint" {
   program = ["./modules/kubernetes/resources/thumbprint_fetch.sh", "oidc.eks.${var.region}.amazonaws.com"]
