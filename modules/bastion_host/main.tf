@@ -224,11 +224,6 @@ resource "aws_instance" "eks_admin_host" {
       
     EOF
 
-  # Replace when user_data changes
-  lifecycle {
-    replace_triggered_by = [user_data]
-  }
-
   # Optional: Set a tag to easily identify the instance
   tags = {
     Name = "EksAdminHostInstance"
