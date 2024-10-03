@@ -137,3 +137,8 @@ variable prometheus_service_account {
   description = "The name of the service account for Prometheus"
   type        = string
 }
+
+variable ebs_csi_service_account {
+  description = "The name of the service account for the EBS CSI driver"
+  type        = string
+}
