@@ -64,6 +64,14 @@ variable alb_controller_service_account_name {
     description = "The name of the service account for the ALB controller"
     type = string
 }
+variable prometheus_namespace {
+    description = "The namespace for Prometheus"
+    type = string
+}
+variable prometheus_service_account{
+    description = "The service account for Prometheus"
+    type = string
+}
 
 # node group variables
 variable instance_types {

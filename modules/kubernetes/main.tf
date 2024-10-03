@@ -78,6 +78,25 @@ resource "aws_iam_role_policy_attachment" "attach_k8s_alb_policy" {
 }
 
 ##################
+## K8s Prometheus Role
+##################
+
+resource "aws_iam_role" "k8s_prometheus_role" {
+  name               = "k8s_prometheus_role"
+  assume_role_policy = data.aws_iam_policy_document.prometheus_role_trust_relationship.json
+}
+
+resource "aws_iam_policy" "k8s_prometheus_role_policy" {
+  name   = "k8s_prometheus_role_policy"
+  policy = data.aws_iam_policy_document.prometheus_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "attach_k8s_prometheus_role_policy" {
+  role       = aws_iam_role.k8s_prometheus_role.name
+  policy_arn = aws_iam_policy.k8s_prometheus_role_policy.arn
+}
+
+##################
 ## EKS Cluster IAM ROLE
 ##################
 

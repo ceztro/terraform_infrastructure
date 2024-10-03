@@ -4,13 +4,16 @@ metadata:
   name: travel-guide-project
   namespace: argocd
 spec:
-  description: Project for the Travel Guide application.
+  description: Project for the Travel Guide application and related monitoring.
   sourceRepos:
     - 'https://github.com/ceztro/ArgoCD_GitOps.git'
+    - 'https://prometheus-community.github.io/helm-charts'
   destinations:
     - namespace: travel-guide-namespace
       server: 'https://kubernetes.default.svc'
     - namespace: kube-system
+      server: 'https://kubernetes.default.svc'
+    - namespace: monitoring
       server: 'https://kubernetes.default.svc'
   clusterResourceWhitelist:
     - group: '*'

@@ -30,6 +30,8 @@ module "kubernetes" {
   namespace                   = var.namespace
   service_account_name        = var.service_account_name
   alb_controller_service_account_name = var.alb_controller_service_account_name
+  prometheus_namespace       = var.prometheus_namespace
+  prometheus_service_account = var.prometheus_service_account
 
   # Project variables
   env                         = var.env

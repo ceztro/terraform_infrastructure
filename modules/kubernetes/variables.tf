@@ -127,3 +127,13 @@ variable "vpc_id" {
   description = "The ID of the VPC"
   type        = string
 }
+
+variable prometheus_namespace {
+  description = "The namespace for Prometheus"
+  type        = string
+}
+
+variable prometheus_service_account_name {
+  description = "The name of the service account for Prometheus"
+  type        = string
+}

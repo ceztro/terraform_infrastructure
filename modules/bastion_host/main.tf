@@ -39,7 +39,7 @@ resource "aws_security_group" "bastion_host" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [var.my_ip] # Adjust this to your IP range for SSH access
+    cidr_blocks = [var.my_ip] 
   }
 
   egress {
@@ -67,7 +67,7 @@ resource "aws_launch_configuration" "bastion_host" {
   instance_type = "t3.micro"
   security_groups = [aws_security_group.bastion_host.id]
   iam_instance_profile = aws_iam_instance_profile.bastion_host.name
-  key_name      = aws_key_pair.deployer.key_name  # Assumes you have already created and imported this key into AWS
+  key_name      = aws_key_pair.deployer.key_name  
 
   user_data = <<-EOF
     #!/bin/bash

@@ -382,6 +382,52 @@ data "aws_iam_policy_document" "alb_controller_policy" {
 }
 
 ##################
+## Prometheus IAM policies
+##################
+
+data "aws_iam_policy_document" "prometheus_role_trust_relationship" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.this.arn]
+    }
+
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(data.aws_eks_cluster.this.identity.0.oidc.0.issuer, "https://", "")}:sub"
+      values   = ["system:serviceaccount:${var.prometheus_namespace}:${var.prometheus_service_account}"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "prometheus_policy" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:ListSecrets"
+    ]
+    resources = ["arn:aws:secretsmanager:us-east-1:871548798187:secret:grafana-NABftM"]
+  }
+
+  # statement {
+  #   effect = "Allow"
+  #   actions = [
+  #     "kms:Decrypt",                   
+  #     "kms:Encrypt",                   
+  #     "kms:GenerateDataKey",            
+  #     "kms:GenerateDataKeyWithoutPlaintext", 
+  #     "kms:DescribeKey"                 
+  #   ]
+  #   resources = [var.kms_key_arn]       
+  # }
+}
+
+##################
 ## OIDC Provider
 ##################
 
