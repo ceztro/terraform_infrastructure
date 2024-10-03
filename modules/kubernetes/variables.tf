@@ -133,7 +133,7 @@ variable prometheus_namespace {
   type        = string
 }
 
-variable prometheus_service_account_name {
+variable prometheus_service_account {
   description = "The name of the service account for Prometheus"
   type        = string
 }
