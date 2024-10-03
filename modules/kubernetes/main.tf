@@ -97,6 +97,25 @@ resource "aws_iam_role_policy_attachment" "attach_k8s_prometheus_role_policy" {
 }
 
 ##################
+## EBS CSI Controller Role
+##################
+
+resource "aws_iam_role" "ebs_csi_role" {
+  name               = "ebs_csi_role"
+  assume_role_policy = data.aws_iam_policy_document.ebs_csi_role_trust_relationship.json
+}
+
+resource "aws_iam_policy" "ebs_csi_role_policy" {
+  name   = "ebs_csi_role_policy"
+  policy = data.aws_iam_policy_document.ebs_csi_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "attach_ebs_csi_role_policy" {
+  role       = aws_iam_role.ebs_csi_role.name
+  policy_arn = aws_iam_policy.ebs_csi_role_policy.arn
+}
+
+##################
 ## EKS Cluster IAM ROLE
 ##################
 
