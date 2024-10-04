@@ -168,7 +168,8 @@ resource "aws_instance" "eks_admin_host" {
       # Fetch kubeconfig and apply to both root and ec2-user
       aws eks update-kubeconfig --region ${var.region} --name ${var.eks_cluster_name} --kubeconfig /home/ec2-user/.kube/config
       aws eks update-kubeconfig --region ${var.region} --name ${var.eks_cluster_name} --kubeconfig /root/.kube/config
-      chown ec2-user:ec2-user /home/ec2-user/.kube/config
+      chown -R ec2-user:ec2-user /home/ec2-user/.kube
+      chmod -R 700 /home/ec2-user/.kube
 
       # Install kubectl to interact with Kubernetes
       curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.30.2/2024-07-12/bin/linux/amd64/kubectl
@@ -230,6 +231,21 @@ resource "aws_instance" "eks_admin_host" {
 
       # Forward port 8080 to access Argo CD
       su - ec2-user -c "nohup kubectl port-forward svc/argocd-server -n argocd 8080:443 --kubeconfig /home/ec2-user/.kube/config > port-forward.log 2>&1 &"
+
+      # Create new context for travel guide
+      su - ec2-user -c "kubectl config set-context travel_guide \
+        --cluster=arn:aws:eks:us-east-1:871548798187:cluster/travel-guide-eks-cluster \
+        --user=arn:aws:eks:us-east-1:871548798187:cluster/travel-guide-eks-cluster \
+        --namespace=travel-guide-namespace"
+
+      # Create new context for monitoring
+      su - ec2-user -c "kubectl config set-context monitoring \
+        --cluster=arn:aws:eks:us-east-1:871548798187:cluster/travel-guide-eks-cluster \
+        --user=arn:aws:eks:us-east-1:871548798187:cluster/travel-guide-eks-cluster \
+        --namespace=monitoring"
+
+      # Set the default context to monitoring
+      su - ec2-user -c "kubectl config use-context monitoring"
       
     EOF
 
